@@ -1667,8 +1667,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                             zIndex: layer.getZIndex()
                         });
 
-                        console.log(lr);
-
                         //this.map.addLayer(layer);
                         this.layerStore2.add([lr]);
 
