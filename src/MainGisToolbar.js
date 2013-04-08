@@ -14,7 +14,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
         };
 
         var selectAction=new GeoExt.Action({
-            icon:"/img/select.png",
+            iconCls: "select-button",
             iconAlign:'top',
             map:this.viewport.map,
             toggleGroup:"tools",
@@ -31,7 +31,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
         });
 
         var freehandSelectAction=new GeoExt.Action({
-            icon:"/img/select-freehand.png",
+            iconCls: "select-freehand-button",
             iconAlign:'top',
             map:this.viewport.map,
             toggleGroup:"tools",
@@ -60,7 +60,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
 
         // Unselect selection of current layer
         var unselectAction = new Ext.Action({
-            icon:"/img/selected-delete.png",
+            iconCls: "unselect-button",
             iconAlign:'top',
             scale:'medium',
             text:Ext.ux.ts.tr('Unselect'),
@@ -71,7 +71,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
 
 
         var zoomSelection = new Ext.Action({
-            icon:"/img/zoom-selection.png",
+            iconCls: "zoom-selection-button",
             iconAlign:'top',
             scale:'medium',
             text: Ext.ux.ts.tr('Zoom Selection'),
@@ -107,7 +107,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                     viewport: this.viewport
                 }).show();
 
-                /*
+            /*
                 var w = new Ext.Window({
                     activeItem: 0,
                     bbar: [
@@ -376,7 +376,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                 }).show();
                 */
             },
-            icon: '/img/print.png',
+            iconCls: 'print-button',
             iconAlign: 'top',
             scale: 'medium',
             scope: this,
@@ -428,7 +428,8 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                     width: 600
                 }).show();
             },
-            icon: '/img/query-builder2.png',
+            //icon: '/lib/DecideGisClient/resources/img/query-builder2.png',
+            iconCls: 'query-builder-button',
             iconAlign: 'top',
             scope: this,
             text: Ext.ux.ts.tr("Query Builder"),
@@ -507,7 +508,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                     width: 600
                 }).show();
             },
-            icon: '/img/table.png',
+            iconCls: 'attribute-table-button',
             iconAlign: 'top',
             scope: this,
             text: Ext.ux.ts.tr("Attribute Table"),
@@ -528,7 +529,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                 console.log(url);
             //window.location.href = url;
             },
-            icon: "/img/save1.png",
+            iconCls: "download-button",
             iconAlign: 'top',
             scope: this,
             tooltip: Ext.ux.ts.tr("Download selected features"),

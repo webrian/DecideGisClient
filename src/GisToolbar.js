@@ -25,8 +25,8 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
         actions.push(new GeoExt.Action({
             control:ctrl.previous,
             disabled:true,
-            iconAlign:'top',
-            icon:'/img/zoom-last.png',
+            iconAlign: 'top',
+            iconCls: 'last-zoom-button',
             text:Ext.ux.ts.tr("Previous View"),
             tooltip:Ext.ux.ts.tr('Go to previous view'),
             scale:'medium'
@@ -34,8 +34,8 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
         actions.push(new GeoExt.Action({
             control:ctrl.next,
             disabled:true,
-            icon:'/img/zoom-next.png',
             iconAlign:'top',
+            iconCls:'next-zoom-button',
             scale:'medium',
             text:Ext.ux.ts.tr("Next View"),
             tooltip:Ext.ux.ts.tr("Go to next view")
@@ -43,8 +43,8 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
         actions.push(new GeoExt.Action({
             allowDepress:false,
             control:new OpenLayers.Control.Navigation(),
-            icon:"/img/pan1.png",
             iconAlign:'top',
+            iconCls: "move-map-button",
             map:this.viewport.map,
             pressed:true,
             scale:'medium',
@@ -57,8 +57,8 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
             control:new OpenLayers.Control.ZoomBox({
                 out:false
             }),
-            icon:'/img/zoom-in1.png',
             iconAlign:'top',
+            iconCls: "zoom-in-button",
             map:this.viewport.map,
             scale:'medium',
             scope:this,
@@ -70,8 +70,8 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
             handler:function(){
                 this.viewport.map.setCenter(this.viewport.centroid,0);
             },
-            icon:"/img/zoom-extent1.png",
             iconAlign:'top',
+            iconCls: "full-extent-button",
             scale:'medium',
             scope:this,
             text:Ext.ux.ts.tr("Full Extent"),
@@ -93,8 +93,8 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
         this.identifyAction=new GeoExt.Action({
             activateOnEnable: true,
             deactivateOnDisable: true,
-            icon: "/img/identify.png",
             iconAlign: 'top',
+            iconCls: "identify-button",
             map: this.viewport.map,
             toggleGroup: "tools",
             allowDepress: false,
