@@ -66,7 +66,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
             text:Ext.ux.ts.tr('Unselect'),
             tooltip:Ext.ux.ts.tr('Unselect all features'),
             handler: this.unselectFeatures,
-            scope:this.viewport
+            scope: this
         });
 
 
@@ -396,7 +396,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
 
                 var selectButton = new Ext.Button({
                     handler: function(){
-                        this.viewport.unselectFeatures();
+                        this.unselectFeatures();
                         attributeSelectionPanel.selectFeaturesByAttributes(attributeSelectionPanel.logicalOperator, attributeSelectionPanel.findByType("ux_attributeselectionfield"));
                     },
                     scope: this,
@@ -638,11 +638,12 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
     },
 
     unselectFeatures: function(event){
-        this.selectionBounds=null;
+        this.viewport.selectionBounds=null;
         // Clear the filter
-        this.layerStore2.clearFilter(true);
+        var layerStore = this.viewport.layerStore2;
+        layerStore.clearFilter(true);
         // Loop through all layers and remove all selection layers
-        this.layerStore2.each(function(record){
+        layerStore.each(function(record){
             if(record.data.layer.name == 'selection'){
                 this.remove(record);
             }
@@ -659,9 +660,9 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                 };
                 store.load();
             }
-        }, this.layerStore2);
+        }, layerStore);
         // Refilter the layerstore
-        this.layerStore2.filterBy(function(record, id){
+        layerStore.filterBy(function(record, id){
             return record.data.layer.displayInLayerSwitcher;
         }, this);
 

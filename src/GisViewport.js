@@ -178,29 +178,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     constructor: function(config) {
         config = config || {};
 
-        this.layerMetadataStore = new Ext.data.JsonStore({
-            /*autoLoad: {
-                params: {
-                    lang: Ext.ux.ts.tr('lang')
-                },
-                // Start init the GUI components after successful getting
-                // the wms layer list
-                callback: function(records, options, success){
-                    this.initComponents(config);
-                },
-                scope: this
-            },*/
-            autoLoad: true,
-            autoDestroy: false,
-            idProperty: 'wms_style',
-            /*proxy : new Ext.data.HttpProxy({
-                method: 'GET',
-                url: '/layers/wms'
-            }),*/
-            data: WmsLayers,
-            fields: ['wms_style','wms_layer','wms_title','wms_legend','wms_cat']
-        });
-
+        /*
         this.layerMetadataStore2 = new Ext.data.JsonStore({
             /*autoLoad: {
                 params: {
@@ -212,42 +190,29 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                     this.initComponents(config);
                 },
                 scope: this
-            },*/
+            },
             autoLoad: true,
             autoDestroy: false,
             idProperty: 'wms_style',
             /*proxy : new Ext.data.HttpProxy({
                 method: 'GET',
                 url: '/layers/wms'
-            }),*/
+            }),
             data: Ext.ux.layers,
             fields: ['wms_style','wms_layer','wms_title','wms_legend','wms_cat']
         });
+        */
 
-        /*
-        Ext.apply(config);
-
-        Ext.ux.GisViewport.superclass.constructor.call(this, config);
-
-    },
-
-         **
+        /**
          * @private
          *
-    initComponents: function(config) {
          */
-        // Example: show a spinner during all Ajax requests
         Ext.Ajax.on('beforerequest', this.showSpinner, this);
         Ext.Ajax.on('requestcomplete', this.hideSpinner, this);
         Ext.Ajax.on('requestexception', this.hideSpinner, this);
 
         this.currentFields = this.basicInfoFields.slice();
         this.map = this.createMap();
-        this.layers = this.createLayers();
-        this.layerStore = new GeoExt.data.LayerStore({
-            //map: this.map,
-            layers: this.layers
-        });
 
         this.layers2 = this.createLayers2();
         this.layerStore2 = new GeoExt.data.LayerStore({
@@ -702,12 +667,14 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
             tbar: this.gistoolbar
         });
 
+        /*
         this.identifyStore = new GeoExt.data.FeatureStore({
             layer: this.identifyLayer,
             features: this.identifyLayer.features,
             fields: this.currentFields,
             autoLoad: true
         });
+        */
 
         /**
          * Identify grid panel which will be placed inside the identify window
@@ -937,376 +904,20 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     createLayers2: function(){
         var layers = [];
 
-        var matrixIdentifier = 'SEA:900913';
-
-        var matrixIds = [{
-            identifier: matrixIdentifier + ':0',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3757214.0)
-        },{
-            identifier: matrixIdentifier + ':1',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3757214.0)
-        },{
-            identifier: matrixIdentifier + ':2',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3600671.0)
-        },{
-            identifier: matrixIdentifier + ':3',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3522400.0)
-        },{
-            identifier: matrixIdentifier + ':4',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3483264.0)
-        },{
-            identifier: matrixIdentifier + ':5',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3483264.0)
-        },{
-            identifier: matrixIdentifier + ':6',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3483264.0)
-        }]
-
-        // Create and add the draw feature aka freehand selection layer.
-        this.freehandSelectionLayer = new OpenLayers.Layer.Vector("Freehand selection Layer",{
-            displayInLayerSwitcher: false
-        });
-        layers.push(this.freehandSelectionLayer);
-
-        /*this.layerMetadataStore2.each(function(record){
-            var data = record.data;
-            var layer = new OpenLayers.Layer.WMS(data.wms_title,
-                this.wms_baseurl,
-                {
-                    format: "image/png8",
-                    layers: data.wms_layer,
-                    styles: data.wms_style,
-                    transparent: true,
-                    tiled: true
-                },{
-                    isBaseLayer: false,
-                    visibility: false,
-                    sphericalMercator: true,
-                    attribution: Ext.ux.ts.tr("Data &copy; Department of Statistics")
-                });
-            layer.id = data.wms_style;
-            layers.push(layer);
-           
-        });*/
-        return layers;
-    },
-
-    /**
-     * Creates the layers from this.layerMetadataStore and also the corresponding
-     * layer tree.
-     * @returns {Array(OpenLayers.Layer)} Array of layers.
-     * @type {Array(OpenLayers.Layer)}
-     */
-    createLayers: function() {
-        // An array with layers
-        var layers = new Array();
-
-        // Create the root node for the layer tree shown in the left side
-        // layer panel.
-        this.rootNode = new Ext.tree.TreeNode({
-            allowDrag: false,
-            checked: false,
-            expanded: true,
-            isLeaf: true,
-            qtip: "Socio-economic Atlas of Lao PDR",
-            text: "Socio-economic Atlas of Lao PDR"
-        })
-
-        // It is required to specify the matrix identifier and the top left
-        // corner explicitly to place the map correctly. For the topLeftCorner
-        // value see the WMTS capabilites document
-        // /geoserver/gwc/service/wmts?REQUEST=getcapabilities
-        var matrixIdentifier = 'SEA:900913';
-
-        var matrixIds = [{
-            identifier: matrixIdentifier + ':0',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3757214.0)
-        },{
-            identifier: matrixIdentifier + ':1',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3757214.0)
-        },{
-            identifier: matrixIdentifier + ':2',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3600671.0)
-        },{
-            identifier: matrixIdentifier + ':3',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3522400.0)
-        },{
-            identifier: matrixIdentifier + ':4',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3483264.0)
-        },{
-            identifier: matrixIdentifier + ':5',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3483264.0)
-        },{
-            identifier: matrixIdentifier + ':6',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3483264.0)
-        }];
-
-        // Background color relief
-        // It is delivered through the WMS Tiling service from the Geowebcache
-        var colorrelief = new OpenLayers.Layer.WMTS({
-            format: 'image/jpeg',
-            isBaseLayer: true,
-            layer: 'sea-colorrelief',
-            matrixIds: matrixIds,
-            matrixSet: matrixIdentifier,
-            name: Ext.ux.ts.tr("Color relief"),
-            sphericalMercator: true,
-            style: 'default',
-            tileOrigin: new OpenLayers.LonLat(10018754.167,3757214.0),
-            url: Ext.ux.GeoServerUrl + '/gwc/service/wmts',
-            visibility: true
-        });
-        colorrelief.id = "colorrelief";
-        // layers.push(colorrelief);
-
-        // Create the corresponding tree node
-        var colorreliefNode = new GeoExt.tree.LayerNode({
-            layer: colorrelief,
-            layerStore: this.layerStore,
-            qtip: Ext.ux.ts.tr("Color Relief"),
-            text: Ext.ux.ts.tr("Color Relief")
-        });
-
-        var osm = new OpenLayers.Layer.OSM(Ext.ux.ts.tr("OpenStreetMap"));
-        osm.id = "openstreetmap";
-        layers.push(osm);
-
-        // Create the corresponding tree node
-        var osmNode = new GeoExt.tree.LayerNode({
-            layer: osm,
-            layerStore: this.layerStore,
-            qtip: Ext.ux.ts.tr("OpenStreetMap"),
-            text: Ext.ux.ts.tr("OpenStreetMap")
-        });
-
-        // Create a atlas tree node, that will contain a subfolder for each
-        // atlas category.
-        var atlasNode = new Ext.tree.TreeNode({
-            expanded: true,
-            loader: new Ext.tree.TreeLoader({
-                applyLoader: false
-            }),
-            qtip: Ext.ux.ts.tr("Atlas Layers"),
-            text: Ext.ux.ts.tr("Atlas Layers")
-        });
-
-        // Add all atlas layers from the layerMetadataStore to the map and
-        // create for each layer a corresponding tree node and add it to its
-        // category node.
-        this.layerMetadataStore.each(function(record){
-            var data = record.data;
-            var layer = new OpenLayers.Layer.WMS(data.wms_title,
-                this.wms_baseurl,
-                {
-                    format: "image/png8",
-                    layers: data.wms_layer,
-                    styles: data.wms_style,
-                    transparent: true,
-                    tiled: true
-                },{
-                    isBaseLayer: false,
-                    visibility: false,
-                    sphericalMercator: true,
-                    attribution: Ext.ux.ts.tr("Data &copy; Department of Statistics")
-                });
-            layer.id = this.ATLAS_PREFIX + "." + data.wms_style;
-            layers.push(layer);
-
-            // Check if the category node already exists.
-            var catNode = atlasNode.findChild("text", data.wms_cat);
-
-            // If categroy node does not yet exist, catNode is undefined. Then
-            // we create a new category node.
-            if(!catNode) {
-                catNode = new Ext.tree.TreeNode({
-                    qtip: data.wms_cat,
-                    text: data.wms_cat
-                });
-                // Append the new category node immediately to the atlas node
-                atlasNode.appendChild(catNode);
-            }
-
-            // Append a new layer node for the current layer
-            catNode.appendChild(new GeoExt.tree.LayerNode({
-                checkedGroup: "atlas",
-                layer: layer,
-                layerStore: this.layerStore,
-                qtip: data.wms_title,
-                text: data.wms_title
-            }));
-
-        }, this);
-        
-        // The overlay folder node in the layer tree
-        this.overlayFolderNode = new Ext.tree.AsyncTreeNode({
-            children: [{
-                checked: false,
-                id: 'decide:l_provcap',
-                leaf: true,
-                listeners: {
-                    "checkchange": {
-                        fn: this.toggleOverlayVisibility,
-                        scope: this
-                    }
-                },
-                qtip: Ext.ux.ts.tr("Province Capitals"),
-                scope: this,
-                text: Ext.ux.ts.tr("Province Capitals")
-            },{
-                checked: false,
-                id: 'decide:l_distcap',
-                leaf: true,
-                listeners: {
-                    "checkchange": {
-                        fn: this.toggleOverlayVisibility,
-                        scope: this
-                    }
-                },
-                qtip: Ext.ux.ts.tr("District Capitals"),
-                scope: this,
-                text: Ext.ux.ts.tr("District Capitals")
-            },{
-                checked: false,
-                id: 'location-schools15',
-                leaf: true,
-                listeners: {
-                    "checkchange": {
-                        fn: this.toggleOverlayVisibility,
-                        scope: this
-                    }
-                },
-                qtip: Ext.ux.ts.tr("Locations of Primary Schools grade 1-5"),
-                scope: this,
-                text: Ext.ux.ts.tr("Locations of Primary Schools grade 1-5")
-            },{
-                checked: false,
-                id: 'location-schools13',
-                leaf: true,
-                listeners: {
-                    "checkchange": {
-                        fn: this.toggleOverlayVisibility,
-                        scope: this
-                    }
-                },
-                qtip: Ext.ux.ts.tr("Locations of Primary Schools grade 1-3"),
-                scope: this,
-                text: Ext.ux.ts.tr("Locations of Primary Schools grade 1-3")
-            },{
-                checked: false,
-                id: 'location-healthcenters',
-                leaf: true,
-                listeners: {
-                    "checkchange": {
-                        fn: this.toggleOverlayVisibility,
-                        scope: this
-                    }
-                },
-                qtip: Ext.ux.ts.tr("Locations of Health Centers"),
-                scope: this,
-                text: Ext.ux.ts.tr("Locations of Health Centers")
-            },{
-                checked: true,
-                id: 'lao-labels',
-                leaf: true,
-                listeners: {
-                    "checkchange": {
-                        fn: this.toggleOverlayVisibility,
-                        scope: this
-                    }
-                },
-                qtip: Ext.ux.ts.tr("Place Names"),
-                text: Ext.ux.ts.tr("Place Names")
-            },{
-                checked: true,
-                id: 'lao-admin',
-                leaf: true,
-                listeners: {
-                    "checkchange": {
-                        fn: this.toggleOverlayVisibility,
-                        scope: this
-                    }
-                },
-                qtip: Ext.ux.ts.tr("Administrative Boundaries"),
-                scope: this,
-                text: Ext.ux.ts.tr("Administrative Boundaries")
-            },{
-                checked: true,
-                id: 'decide:lao-roads',
-                leaf: true,
-                listeners: {
-                    "checkchange": {
-                        fn: this.toggleOverlayVisibility,
-                        scope: this
-                    }
-                },
-                qtip: Ext.ux.ts.tr("Road Network"),
-                scope: this,
-                text: Ext.ux.ts.tr("Road Network")
-            },{
-                checked: true,
-                id: 'decide:lao-river',
-                leaf: true,
-                listeners: {
-                    "checkchange": {
-                        fn: this.toggleOverlayVisibility,
-                        scope: this
-                    }
-                },
-                qtip: Ext.ux.ts.tr("Waterbodies"),
-                scope: this,
-                text: Ext.ux.ts.tr("Waterbodies")
-            }],
-            cls: 'folder',
-            expanded: true,
-            id: 'overlay',
-            qtip: Ext.ux.ts.tr("Overlay"),
-            text: Ext.ux.ts.tr("Overlay")
-        });
-
-        // Create the overlay WMS layer with the inital layers.
-        this.overlayLayer = new OpenLayers.Layer.WMS(
-            'overlaylayer',
-            this.wms_baseurl,
-            {
-                format: 'image/png',
-                layers: this.overlayLayerNames,
-                tiled: true,
-                transparent: true
-            },{
-                displayInLayerSwitcher: false,
-                isBaseLayer: false,
-                sphericalMercator: true
-            });
-
-        layers.push(this.overlayLayer);
-
+        /*
         // Create and add the identify layer.
         this.identifyLayer = new OpenLayers.Layer.Vector("Identify Layer",{
             displayInLayerSwitcher: false
         });
         layers.push(this.identifyLayer);
-
-        // Create and add the draw feature aka freehand selection layer.
-        this.captureLayer = new OpenLayers.Layer.Vector("Capture Layer",{
-            displayInLayerSwitcher: false
-        });
-        layers.push(this.captureLayer);
+        */
 
         // Create and add the draw feature aka freehand selection layer.
         this.freehandSelectionLayer = new OpenLayers.Layer.Vector("Freehand selection Layer",{
             displayInLayerSwitcher: false
         });
         layers.push(this.freehandSelectionLayer);
-
-        // Append the tree subnodes to the root nodes in the correct order
-        // The topographic overlay is on top
-        this.rootNode.appendChild(this.overlayFolderNode);
-        // Append the atlas layer nodes
-        this.rootNode.appendChild(atlasNode);
-        // Append the background layers
-        this.rootNode.appendChild(colorreliefNode);
-        this.rootNode.appendChild(osmNode);
-
+        
         return layers;
     },
 
@@ -1315,48 +926,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
      * @type {OpenLayers.Map}
      */
     createMap: function() {
-
-        var matrixIdentifier = 'SEA:900913';
-
-        var matrixIds = [{
-            identifier: matrixIdentifier + ':0',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3757214.0)
-        },{
-            identifier: matrixIdentifier + ':1',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3757214.0)
-        },{
-            identifier: matrixIdentifier + ':2',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3600671.0)
-        },{
-            identifier: matrixIdentifier + ':3',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3522400.0)
-        },{
-            identifier: matrixIdentifier + ':4',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3483264.0)
-        },{
-            identifier: matrixIdentifier + ':5',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3483264.0)
-        },{
-            identifier: matrixIdentifier + ':6',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3483264.0)
-        }]
-
-        // Background color relief
-        // It is delivered through the WMS Tiling service from the Geowebcache
-        /*var colorrelief = new OpenLayers.Layer.WMTS({
-            format: 'image/jpeg',
-            isBaseLayer: true,
-            layer: 'sea-colorrelief',
-            matrixIds: matrixIds,
-            matrixSet: matrixIdentifier,
-            name: Ext.ux.ts.tr("Color relief"),
-            sphericalMercator: true,
-            style: 'default',
-            tileOrigin: new OpenLayers.LonLat(10018754.167,3757214.0),
-            url: Ext.ux.GeoServerUrl + '/gwc/service/wmts',
-            visibility: true
-        });
-        colorrelief.id = "colorrelief";*/
 
         var hillshade = new OpenLayers.Layer.TMS(
             "Hillshade", "/tms/", {
@@ -1378,18 +947,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
             new OpenLayers.Control.ScaleLine()
             ],
             displayProjection: new OpenLayers.Projection("EPSG:4326"),
-            eventListeners: {
-                // Get an event when a layer changes. Check first if it's an
-                // atlas layer. Atlas layer ids has to be named atlas.xxxxxx
-                // to differentiate them from the other layers, since they
-                // cannot be base layers. If the event is triggered by an atlas
-                // layer and the visibility is true, then this is the new
-                // active layer to query on identify and selection actions.
-                "changelayer": function(event){
-                    this.resetCurrentFields();
-                },
-                scope: this
-            },
             layers: [hillshade],
             maxExtent: this.fullExtent,
             projection: new OpenLayers.Projection("EPSG:900913"),
@@ -1406,6 +963,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
      * @return void
      */
     resetCurrentFields: function() {
+        console.log("resetCurrentFields");
         // Loop over all layers
         for(var i = 0; i < this.layers.length; i++) {
             // Atlas layer ids are in the form "atlas.wms_style" whereas wms_style
@@ -1504,36 +1062,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
         this.map.div.style.cursor = '';
     },
 
-    unselectFeatures: function(event){
-        this.selectionBounds=null;
-        // Clear the filter
-        this.layerStore2.clearFilter(true);
-        // Loop through all layers and remove all selection layers
-        this.layerStore2.each(function(record){
-            if(record.data.layer.name == 'selection'){
-                this.remove(record);
-            }
-            if(record.data.featureStore){
-                var store = record.data.featureStore;
-                var params = store.baseParams;
-                store.baseParams = null;
-                store.baseParams = {
-                    attrs: params.attrs,
-                    dataset: params.dataset,
-                    format: params.format,
-                    layer: params.layer,
-                    limit: params.limit
-                };
-                store.load();
-            }
-        }, this.layerStore2);
-        // Refilter the layerstore
-        this.layerStore2.filterBy(function(record, id){
-            return record.data.layer.displayInLayerSwitcher;
-        }, this);
-
-    },
-
     addLayerToStore: function(node){
 
         if(!node.leaf){
@@ -1549,47 +1077,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
         });
         layerGridLoadingMask.show();
 
-
-        /*
-        var matrixIdentifier = 'SEA:900913';
-
-        var matrixIds = [{
-            identifier: matrixIdentifier + ':0',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3757214.0)
-        },{
-            identifier: matrixIdentifier + ':1',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3757214.0)
-        },{
-            identifier: matrixIdentifier + ':2',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3600671.0)
-        },{
-            identifier: matrixIdentifier + ':3',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3522400.0)
-        },{
-            identifier: matrixIdentifier + ':4',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3483264.0)
-        },{
-            identifier: matrixIdentifier + ':5',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3483264.0)
-        },{
-            identifier: matrixIdentifier + ':6',
-            topLeftCorner: new OpenLayers.LonLat(10018754.167,3483264.0)
-        }];
-        var layer = new OpenLayers.Layer.WMTS({
-            attribution: node.attributes.attribution ? node.attributes.attribution : "",
-            format: 'image/png',
-            isBaseLayer: false,
-            layer: node.attributes.tms_layer,
-            matrixIds: matrixIds,
-            matrixSet: matrixIdentifier,
-            name: node.attributes.text,
-            opacity: 0.75,
-            sphericalMercator: true,
-            style: 'default',
-            tileOrigin: new OpenLayers.LonLat(10018754.167,3757214.0),
-            url: node.attributes.tms_url,
-            visibility: true
-        });*/
         var layer = new OpenLayers.Layer.TMS(
             node.attributes.text, node.attributes.tms_url, {
                 isBaseLayer: false,
