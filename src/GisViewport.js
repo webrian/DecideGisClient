@@ -612,7 +612,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
             this.printWaitMessageBox = Ext.Msg.wait("Please wait ...", "Saving Progress");
 
             // Get the current layer and get the required parameters
-            //var currentLayer = this.getActiveLayer();
 
             //var index = this.layerMetadataStore.find('wms_title', currentLayer.name);
             //var r = this.layerMetadataStore.getAt(index);
@@ -832,26 +831,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * @returns OpenLayer.Layer
-     * @type OpenLayers.Layer
-     */
-    getActiveLayer: function(){
-        // Loop over all layers
-        for(var i = 0; i < this.layers.length; i++) {
-            var l = this.layers[i];
-            // Test if it's an atlas layer
-            if(l.id.split(".")[0] == this.ATLAS_PREFIX) {
-                // It is supposed, that only one layer is visible at a time
-                // that's why we can return it directly.
-                if(l.visibility) {
-                    return l
-                }
-            }
-        }
-        return null;
-    },
-
-    /**
      * Select features by attribute conditions. Basically it's similar to the
      * feature selection by bounding box. Create a selection style with rules,
      * reinstantiate the selection layer as OpenLayers.Layer.WMS.Post layer
@@ -989,6 +968,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     },
 
     toggleOverlayVisibility: function() {
+        console.warn("@deprecated: GisViewport.toggleOverlayVisibility");
 
         this.overlayLayerNames = [];
         this.overlayFolderNode.eachChild(this.iterate,this);
@@ -1021,6 +1001,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
      * @param {String[]} layers
      */
     resetWmsLayer: function(layers){
+        console.warn("@deprecated GisViewport.resetWmsLayer")
         // Remove the current overlay layer in any case
         if(this.map.getLayer(this.overlayLayer.id)){
             this.map.removeLayer(this.overlayLayer);
