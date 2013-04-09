@@ -571,12 +571,18 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
 
         var layer = ms.selectByBox(bbox);
 
-        this.viewport.layerStore2.add([new GeoExt.data.LayerRecord({
+        var lr = new GeoExt.data.LayerRecord({
+            attributeStore: null,
+            attrs: [],
+            featureStore: null,
+            id: 'selection',
             layer: layer,
             opacity: 100,
-            title: 'Selected Features'
-        })
-        ]);
+            title: 'selection',
+            zIndex: layer.getZIndex()
+        });
+
+        this.viewport.layerStore2.add([lr]);
 
         // Filter base and vector layers
         this.viewport.layerStore2.filterBy(function(record, id){
@@ -639,14 +645,16 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
 
     unselectFeatures: function(event){
         this.viewport.selectionBounds=null;
-        // Clear the filter
+        // Get the layerStore and clear the filter
         var layerStore = this.viewport.layerStore2;
-        layerStore.clearFilter(true);
+        layerStore.clearFilter(false);
         // Loop through all layers and remove all selection layers
         layerStore.each(function(record){
+            // Check if the layer's name is 'selection'
             if(record.data.layer.name == 'selection'){
                 this.remove(record);
             }
+            // Restore all layer's featureStores
             if(record.data.featureStore){
                 var store = record.data.featureStore;
                 var params = store.baseParams;

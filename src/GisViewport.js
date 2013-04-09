@@ -928,10 +928,10 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     createMap: function() {
 
         var hillshade = new OpenLayers.Layer.TMS(
-            "Hillshade", "/tms/", {
+            "Hillshade", "/", {
                 isBaseLayer: true,
                 displayInLayerSwitcher: false,
-                layername: "topo",
+                layername: "landsat",
                 type: "png",
                 // set if different than the bottom left of map.maxExtent
                 tileOrigin: new OpenLayers.LonLat(-20037508.340000, -20037508.340000),
