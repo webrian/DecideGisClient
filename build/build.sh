@@ -1,4 +1,14 @@
 #!/bin/bash
+#
+# Used to build the library, requires the Closure Compiler. Get the Closure Compiler
+# from https://developers.google.com/closure/compiler/ and unzip it to this directory.
+#
+# On the command line:
+# cd build/
+# wget http://closure-compiler.googlecode.com/files/compiler-latest.zip
+# unzip compiler-latest.zip
+# ./build.sh
+#
 
 basedir=".."
 srcdir="$basedir/src"
