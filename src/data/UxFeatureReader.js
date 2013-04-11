@@ -82,6 +82,7 @@ Ext.extend(GeoExt.ux.data.UxFeatureReader, Ext.data.DataReader, {
      *  objects from an array of features.
      */
     readRecords : function(features) {
+        console.warn("deprecated");
 
         var vectors = [features.length];
 

@@ -1,5 +1,5 @@
 Ext.ns('Ext.ux');
-Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
+Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
     viewport:null,
 
     identifyAction:null,
@@ -64,7 +64,21 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
             scope:this,
             text:Ext.ux.ts.tr('Zoom In'),
             toggleGroup:"tools",
-            tooltip:Ext.ux.ts.tr('Zoom on an area by clicking and dragging')
+            tooltip:Ext.ux.ts.tr('Zoom in')
+        }));
+        actions.push(new GeoExt.Action({
+            allowDepress:false,
+            control:new OpenLayers.Control.ZoomBox({
+                out: true
+            }),
+            iconAlign: 'top',
+            iconCls: "zoom-out-button",
+            map: this.viewport.map,
+            scale: 'medium',
+            scope: this,
+            text: Ext.ux.ts.tr('Zoom Out'),
+            toggleGroup: "tools",
+            tooltip: Ext.ux.ts.tr('Zoom out')
         }));
         actions.push(new Ext.Action({
             handler:function(){
@@ -108,9 +122,8 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
         actions.push('->');
         var villageSearchStore=new Ext.data.JsonStore({
             url:'/gis/search',
-            root:'data',
-            idProperty:'vid',
-            fields:['vid','name','lon','lat']
+            idProperty:'osm_id',
+            fields:['osm_id', 'display_name','class','lon','lat']
         });
         actions.push(new Ext.form.Label({
             style:{
@@ -121,7 +134,7 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
         }));
         actions.push(new Ext.form.ComboBox({
             store:villageSearchStore,
-            displayField:'name',
+            displayField: 'display_name',
             typeAhead:true,
             mode:'remote',
             queryParam:'q',
@@ -136,12 +149,12 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
                 scope:this
             }
         }));
-        var gisToolbarConfig={
+        var navigationToolbarConfig={
             enableOverflow: true,
             items: actions
         }
-        Ext.apply(gisToolbarConfig,config);
-        Ext.ux.GisToolbar.superclass.constructor.call(this,gisToolbarConfig);
+        Ext.apply(navigationToolbarConfig,config);
+        Ext.ux.NavigationToolbar.superclass.constructor.call(this, navigationToolbarConfig);
     },
     
     onGetFeatureInfoClick: function(event){
