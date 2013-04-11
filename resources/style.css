@@ -42,6 +42,9 @@ GIS navigation buttons
 .zoom-in-button {
     background-image: url(img/zoom-in1.png) !important;
 }
+.zoom-out-button {
+    background-image: url(img/zoom-out1.png) !important;
+}
 .full-extent-button {
     background-image: url(img/zoom-extent1.png) !important;
 }

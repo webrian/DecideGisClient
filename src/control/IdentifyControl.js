@@ -34,6 +34,7 @@ OpenLayers.Control.IdentifyControl = OpenLayers.Class(OpenLayers.Control, {
      * is viewport.
      */
     initialize: function(options) {
+        console.warn("@deprecated");
 
         OpenLayers.Control.prototype.initialize.call(this, options);
 
