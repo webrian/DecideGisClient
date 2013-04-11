@@ -59,12 +59,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     layout: 'border',
 
     /**
-     * This layer contains all features from a selection
-     * @type Ext.ux.data.SelectionStore
-     */
-    selectionStore: null,
-    
-    /**
      * Bounding box of the current selection as OpenLayers.Bounds object
      * @type OpenLayers.Bounds
      */
@@ -178,44 +172,18 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     constructor: function(config) {
         config = config || {};
 
-        /*
-        this.layerMetadataStore2 = new Ext.data.JsonStore({
-            /*autoLoad: {
-                params: {
-                    lang: Ext.ux.ts.tr('lang')
-                },
-                // Start init the GUI components after successful getting
-                // the wms layer list
-                callback: function(records, options, success){
-                    this.initComponents(config);
-                },
-                scope: this
-            },
-            autoLoad: true,
-            autoDestroy: false,
-            idProperty: 'wms_style',
-            /*proxy : new Ext.data.HttpProxy({
-                method: 'GET',
-                url: '/layers/wms'
-            }),
-            data: Ext.ux.layers,
-            fields: ['wms_style','wms_layer','wms_title','wms_legend','wms_cat']
-        });
-        */
-
         /**
          * @private
          *
-         *
+         */
         Ext.Ajax.on('beforerequest', this.showSpinner, this);
         Ext.Ajax.on('requestcomplete', this.hideSpinner, this);
         Ext.Ajax.on('requestexception', this.hideSpinner, this);
-         */
 
         this.currentFields = this.basicInfoFields.slice();
         this.map = this.createMap();
 
-        this.layers2 = this.createLayers2();
+        this.layers2 = this.createLayers();
         this.layerStore2 = new GeoExt.data.LayerStore({
             fields: [
             // A store that holds the attributes and types
@@ -429,7 +397,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                     icon: '/img/move-down-16.png',
                     tooltip: Ext.ux.ts.tr("Lower Layer"),
                     handler: function(grid, rowIndex, colIndex) {
-                        console.log("lower layer");
                         var count = this.layerStore2.getCount();
                         if((rowIndex+1) < count){
                             var record = this.layerStore2.getAt(rowIndex);
@@ -457,8 +424,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                     tooltip: Ext.ux.ts.tr("Show Legend"),
                     handler: function(grid, rowIndex, colIndex){
 
-                        console.log("show legend");
-
                         var loadingMask = new Ext.LoadMask(this.layerGrid.body, {
                             msg: Ext.ux.ts.tr("Loading...")
                         });
@@ -467,7 +432,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                         var rec = this.layerStore2.getAt(rowIndex);
 
                         var layername = rec.data.layer.layername.split("@")[0];
-                        console.log(layername);
+
                         var split = layername.split(":");
                         var ds = split[0];
                         var ln = split[1];
@@ -653,7 +618,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
             layer: this.printLayer
         });
 
-        this.gistoolbar = new Ext.ux.GisToolbar({
+        this.gistoolbar = new Ext.ux.NavigationToolbar({
             layergrid: this.layerGrid,
             layers: this.layerStore2.layers,
             viewport: this
@@ -675,16 +640,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
             autoLoad: true
         });
         */
-
-        /**
-         * Init the selection store
-         */
-        this.selectionStore = new Ext.ux.data.SelectionStore({
-            autoDestroy: true,
-            downloadAction: this.gistoolbar.downloadAction,
-            fields: this.currentFields
-        //layer: identifyLayer
-        });
 
         /**
          *
@@ -716,8 +671,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
 
         Ext.ux.GisViewport.superclass.constructor.call(this, gisViewportConfig);
 
-        //var l = this.map.getLayersBy('id',"vniacgb16")[0];
-        //this.setActiveLayer(l);
         // Set the centroid and zoom level 0 as initial map view
         this.map.setCenter(this.centroid,0,true,true);
     },
@@ -765,11 +718,13 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     },
 
     /**
+     * @deprecated
      * @param {OpenLayers.Layer} layer
      * @returns void
      * @type void
      */
     setActiveLayer: function(layer){
+        console.warn("@deprecated");
         // Loop over all layers
         for(var i = 0; i < this.layers.length; i++) {
             var l = this.layers[i];
@@ -835,16 +790,11 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
 
     },
 
-    createLayers2: function(){
+    /**
+     * @return {OpenLayers.Layer[]}
+     */
+    createLayers: function(){
         var layers = [];
-
-        /*
-        // Create and add the identify layer.
-        this.identifyLayer = new OpenLayers.Layer.Vector("Identify Layer",{
-            displayInLayerSwitcher: false
-        });
-        layers.push(this.identifyLayer);
-        */
 
         // Create and add the draw feature aka freehand selection layer.
         this.freehandSelectionLayer = new OpenLayers.Layer.Vector("Freehand selection Layer",{
@@ -923,6 +873,9 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
         }
     },
 
+    /**
+     * @deprecated
+     */
     toggleOverlayVisibility: function() {
         console.warn("@deprecated: GisViewport.toggleOverlayVisibility");
 
@@ -992,16 +945,13 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
      * Show a wait cursor when the mouse is over the map.
      */
     showSpinner: function(connection, opts) {
-        console.warn("@deprecated");
         this.map.div.style.cursor = 'wait';
     },
 
     /**
-     * @deprecated
      * Reset the cursor to "normal".
      */
     hideSpinner: function(connection, response, opts) {
-        console.warn("@deprecated");
         this.map.div.style.cursor = '';
     },
 

@@ -1,5 +1,5 @@
 Ext.ns('Ext.ux');
-Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
+Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
     viewport:null,
 
     identifyAction:null,
@@ -149,12 +149,12 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
                 scope:this
             }
         }));
-        var gisToolbarConfig={
+        var navigationToolbarConfig={
             enableOverflow: true,
             items: actions
         }
-        Ext.apply(gisToolbarConfig,config);
-        Ext.ux.GisToolbar.superclass.constructor.call(this,gisToolbarConfig);
+        Ext.apply(navigationToolbarConfig,config);
+        Ext.ux.NavigationToolbar.superclass.constructor.call(this, navigationToolbarConfig);
     },
     
     onGetFeatureInfoClick: function(event){
