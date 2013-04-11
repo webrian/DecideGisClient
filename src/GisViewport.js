@@ -206,10 +206,11 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
         /**
          * @private
          *
-         */
+         *
         Ext.Ajax.on('beforerequest', this.showSpinner, this);
         Ext.Ajax.on('requestcomplete', this.hideSpinner, this);
         Ext.Ajax.on('requestexception', this.hideSpinner, this);
+         */
 
         this.currentFields = this.basicInfoFields.slice();
         this.map = this.createMap();
@@ -676,37 +677,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
         */
 
         /**
-         * Identify grid panel which will be placed inside the identify window
-         */
-        this.identifyGridPanel = new Ext.grid.GridPanel({
-            region: "center",
-            store: this.identifyStore,
-            cm: this.getColumnModelFromFields(this.currentFields,true),
-            sm: new Ext.grid.RowSelectionModel({
-                singleSelect: true
-            }),
-            viewConfig: {
-                forceFit: true
-            }
-        });
-
-        /**
-         * Popup window for identify actions. Close action has to be set to
-         * "hide" in order to reuse the window.
-         */
-        this.identifyWindow = new Ext.Window({
-            title: "Identify Results",
-            closeAction: "hide",
-            height: 200,
-            width: 480,
-            layout: "border",
-            items: [ this.identifyGridPanel]
-        });
-        this.identifyWindow.on("hide", function(){
-            this.identifyLayer.destroyFeatures();
-        },this);
-
-        /**
          * Init the selection store
          */
         this.selectionStore = new Ext.ux.data.SelectionStore({
@@ -718,28 +688,11 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
 
         /**
          *
-         */
+         *
         this.mapSelection = new Ext.ux.MapSelection({
             map: this.map
         });
-
-        /**
-         * Output grid to show attributes of selected features
          */
-        this.selectionGridPanel = new Ext.grid.GridPanel({
-            anchor: '100% 100%',
-            bbar: new Ext.PagingToolbar({
-                store: this.selectionStore,
-                pageSize: this.pageSize,
-                displayInfo: true
-            }),
-            title: Ext.ux.ts.tr('Select by attributes'),
-            store: this.selectionStore,
-            colModel: this.getColumnModelFromFields(this.currentFields),
-            region: "south",
-            split: true,
-            height: 120
-        });
 
         var gisViewportConfig = {
             layout: 'border',
@@ -770,6 +723,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     },
 
     /**
+     * @deprecated
      * Creates a column model for use in a grid based on the parameter fields.
      * Parameter fields needs to be an array with the fields that will be shown
      * in the grid.
@@ -779,6 +733,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
      * @type void
      */
     getColumnModelFromFields: function(fields, reset) {
+        console.warn("@deprecated");
         if(reset) {
             this.resetCurrentFields();
         }
@@ -907,10 +862,10 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     createMap: function() {
 
         var hillshade = new OpenLayers.Layer.TMS(
-            "Hillshade", "/", {
+            "Hillshade", "/tms/", {
                 isBaseLayer: true,
                 displayInLayerSwitcher: false,
-                layername: "landsat",
+                layername: "topo",
                 type: "png",
                 // set if different than the bottom left of map.maxExtent
                 tileOrigin: new OpenLayers.LonLat(-20037508.340000, -20037508.340000),
@@ -936,13 +891,14 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     },
 
     /**
+     * @deprecated
      * Reset the variable current fields, that holds at any time the currently
      * selected variables.
      * This method is called each time the current layer changes.
      * @return void
      */
     resetCurrentFields: function() {
-        console.log("resetCurrentFields");
+        console.warn("@deprecated");
         // Loop over all layers
         for(var i = 0; i < this.layers.length; i++) {
             // Atlas layer ids are in the form "atlas.wms_style" whereas wms_style
@@ -977,11 +933,13 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     },
 
     /**
+     * @deprecated
      * Iterate through a node and store checked and enabled layer to the
      * wmsLayersArray.
      * @param {Ext.tree.TreeNode} node
      */
     iterate: function(node){
+        console.warn("@deprecated")
         if(node.childNodes.length > 0){
             for(var i = 0; i < node.childNodes.length; i++){
                 //for(var i = node.childNodes.length-1; i >=0; i--){
@@ -995,6 +953,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     },
 
     /**
+     * @deprecated
      * Reset the main WMS layer of the map with a new layer array. If the layer
      * array is empty i.e. the user turn off all the overlay layers, the layer
      * has to be removed without replacing it.
@@ -1033,13 +992,16 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
      * Show a wait cursor when the mouse is over the map.
      */
     showSpinner: function(connection, opts) {
+        console.warn("@deprecated");
         this.map.div.style.cursor = 'wait';
     },
 
     /**
+     * @deprecated
      * Reset the cursor to "normal".
      */
     hideSpinner: function(connection, response, opts) {
+        console.warn("@deprecated");
         this.map.div.style.cursor = '';
     },
 
