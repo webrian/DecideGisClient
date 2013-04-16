@@ -10,8 +10,6 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
 
     initComponent: function(){
 
-        
-
         var bbar = [
         {
             disabled: true,
@@ -152,6 +150,22 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                 },
                 flex: .7,
                 items: [{
+                    fieldLabel: Ext.ux.ts.tr('Layout'),
+                    mode: 'local',
+                    typeAhead: true,
+                    triggerAction: 'all',
+                    valueField: 'value',
+                    displayField: 'name',
+                    forceSelection: true,
+                    selectOnFocus: true,
+                    store: this.printProvider.layouts,
+                    plugins: new GeoExt.plugins.PrintProviderField({
+                        printProvider: this.printProvider
+                    }),
+                    xtype: 'combo'
+                }],
+                /*
+                items: [{
                     anchor: '100%',
                     fieldLabel: Ext.ux.ts.tr("Select province"),
                     store: ['prov', 'provi2'],
@@ -162,6 +176,7 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                     store: ['dist1', 'dist2'],
                     xtype: 'combo'
                 }],
+                */
                 labelStyle: {
                     margin: '5px'
                 },

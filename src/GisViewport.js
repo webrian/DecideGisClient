@@ -129,7 +129,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     pageSize: 25,
 
     printExtent: null,
-    printLayer: new OpenLayers.Layer.Vector('Map Extent',{
+    printLayer: new OpenLayers.Layer.Vector('Print Extent',{
         displayInLayerSwitcher: false,
         visibility: false
     }),
@@ -558,7 +558,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
         this.printProvider = new GeoExt.data.PrintProvider({
             capabilities: printCapabilities
         });
-            
+
         // Add custom parameters to the print provider that are sent in the
         // request JSON object to the server and used in the config.yaml page
         // definition file located in $GEOSERVER_DATA/printing
@@ -566,14 +566,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
         // is used as legend title.
         // Open the wait messagebox before printing.
         this.printProvider.on('beforeprint',function(printProvider,map,pages,options){
-
-            // Workaround for bug in printing module!
-            for(var i = 0; i < map.layers.length; i++){
-                var l = map.layers[i];
-                if(l.CLASS_NAME == "OpenLayers.Layer.TMS"){
-            //l.type = "png;";
-            }
-            }
 
             this.printWaitMessageBox = Ext.Msg.wait("Please wait ...", "Saving Progress");
 
@@ -801,6 +793,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
             displayInLayerSwitcher: false
         });
         layers.push(this.freehandSelectionLayer);
+        layers.push(this.printLayer);
         
         return layers;
     },
