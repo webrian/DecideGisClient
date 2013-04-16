@@ -29,8 +29,8 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                     Ext.getCmp('move-next').enable();
                 }
             },
-            icon: '/img/go-previous.png',
             iconAlign: 'top',
+            iconCls: 'go-previous-button',
             id: 'move-prev',
             scale: 'medium',
             scope: this,
@@ -52,8 +52,8 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                     Ext.getCmp('move-next').disable();
                 }
             },
-            icon: '/img/go-next.png',
             iconAlign: 'top',
+            iconCls: 'go-next-button',
             id: 'move-next',
             scale: 'medium',
             scope: this,
@@ -70,8 +70,8 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                 }
                 this.close();
             },
-            icon: '/img/quit.png',
             iconAlign: 'top',
+            iconCls: 'quit-button',
             scale: 'medium',
             scope: this,
             text: Ext.ux.ts.tr("Quit"),
@@ -118,10 +118,28 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                     }
 
                     if(this.overlayLayer){
-
-                        console.log("have overlayLayer");
                         printMap.addLayers([this.overlayLayer]);
                     }
+
+                    var layername = this.backgroundLayer.layername.split("@")[0]
+
+                    // Get the current layer and get the required parameters
+
+                    //var index = this.layerMetadataStore.find('wms_title', currentLayer.name);
+                    //var r = this.layerMetadataStore.getAt(index);
+
+                    // This is the legend title e.g. "Percent of village population" etc.
+                    this.printProvider.customParams.legendTitle = this.backgroundLayer.name; //   r.get('wms_legend');
+
+                    // WMS styles and layers are required for the WMS legend
+                    this.printProvider.customParams.wmsstyle = "";
+                    this.printProvider.customParams.wmslayer = layername;
+                    this.printProvider.customParams.comment = "";
+
+                    
+                    this.printProvider.customParams.disclaimer = Ext.ux.ts.tr("Boundaries, colours and denominations on this map are not authoritative.");
+                    this.printProvider.customParams.source = "this.backgroundLayer.source";
+                    this.printProvider.customParams.copyright = "this.backgroundLayer.attribution";
                     
                     this.printProvider.print(printMap, this.printExtent.pages);
                 } else {
@@ -133,8 +151,8 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                     });
                 }
             },
-            icon: "/img/print.png",
             iconAlign: "top",
+            iconCls: "print-button",
             id: 'print-button',
             text: Ext.ux.ts.tr("Print"),
             scale: 'medium',
@@ -197,8 +215,8 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                         this.printExtent.addPage();
                     },
                     scope: this,
-                    icon: '/img/layer-add.png',
                     iconAlign: 'top',
+                    iconCls: 'add-frame-button',
                     scale: 'large',
                     text: "Add map frame",
                     xtype: 'button'
@@ -213,8 +231,8 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                             }
                         }
                     },
-                    icon: '/img/layer-delete.png',
                     iconAlign: 'top',
+                    iconCls: 'remove-frame-button',
                     scale: 'large',
                     scope: this,
 
@@ -293,15 +311,19 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                 padding: "5px"
             },
             id: 'card-3',
+            // This is the map title and subtitle that will be placed at the top of the map
             items: [{
                 anchor: '100%',
                 fieldLabel: Ext.ux.ts.tr("Title"),
+                name: 'mapTitle',
+                plugins: new GeoExt.plugins.PrintProviderField({
+                    printProvider: this.printProvider
+                }),
                 xtype: 'textfield'
             },{
                 anchor: '100%',
                 fieldLabel: Ext.ux.ts.tr('Subtitle'),
                 name: 'mapSubtitle',
-                //allowBlank:false,
                 plugins: new GeoExt.plugins.PrintProviderField({
                     printProvider: this.printProvider
                 }),

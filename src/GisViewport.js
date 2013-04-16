@@ -569,25 +569,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
 
             this.printWaitMessageBox = Ext.Msg.wait("Please wait ...", "Saving Progress");
 
-            // Get the current layer and get the required parameters
 
-            //var index = this.layerMetadataStore.find('wms_title', currentLayer.name);
-            //var r = this.layerMetadataStore.getAt(index);
-
-            // This is the legend title e.g. "Percent of village population" etc.
-            printProvider.customParams.legendTitle = "test"; //   r.get('wms_legend');
-
-            // WMS styles and layers are required for the WMS legend
-            printProvider.customParams.wmsstyle = "vrpdeaa40";
-            printProvider.customParams.wmslayer = "village-polygon";
-            printProvider.customParams.comment = "TEST";
-
-            // This is the map title that will be placed at the top of the map
-            printProvider.customParams.mapTitle = "currentLayer.name";
-            printProvider.customParams.mapSubtitle = "currentLayer.name";
-            printProvider.customParams.disclaimer = Ext.ux.ts.tr("Boundaries, colours and denominations on this map are not authoritative.");
-            printProvider.customParams.source = Ext.ux.ts.tr("Source: Lao Population and Housing Census 2005");
-            printProvider.customParams.copyright = Ext.ux.ts.tr("Copyright: DECIDE INFO, http://www.decide.la/; Lao Statistics Bureau, Vientiane, Lao PDR, http://www.nsc.gov.la/");
         },this);
 
         // If printing was successful, close the this.waitMessageBox dialog.

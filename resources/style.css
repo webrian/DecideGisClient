@@ -51,6 +51,22 @@ GIS navigation buttons
 .identify-button {
     background-image: url(img/identify.png) !important;
 }
+/** Icons in print window **/
+.add-frame-button {
+    background-image: url(img/layer-add.png) !important;
+}
+.remove-frame-button {
+    background-image: url(img/layer-delete.png) !important;
+}
+.quit-button {
+    background-image: url(img/quit.png) !important;
+}
+.go-previous-button {
+    background-image: url(img/go-previous.png) !important;
+}
+.go-next-button {
+    background-image: url(img/go-next.png) !important;
+}
 /** Prevent pink tiles in OpenLayers **/
 img.olImageLoadError {
     visibility: hidden !important;
