@@ -129,7 +129,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     pageSize: 25,
 
     printExtent: null,
-    printLayer: new OpenLayers.Layer.Vector('Map Extent',{
+    printLayer: new OpenLayers.Layer.Vector('Print Extent',{
         displayInLayerSwitcher: false,
         visibility: false
     }),
@@ -558,7 +558,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
         this.printProvider = new GeoExt.data.PrintProvider({
             capabilities: printCapabilities
         });
-            
+
         // Add custom parameters to the print provider that are sent in the
         // request JSON object to the server and used in the config.yaml page
         // definition file located in $GEOSERVER_DATA/printing
@@ -567,35 +567,9 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
         // Open the wait messagebox before printing.
         this.printProvider.on('beforeprint',function(printProvider,map,pages,options){
 
-            // Workaround for bug in printing module!
-            for(var i = 0; i < map.layers.length; i++){
-                var l = map.layers[i];
-                if(l.CLASS_NAME == "OpenLayers.Layer.TMS"){
-            //l.type = "png;";
-            }
-            }
-
             this.printWaitMessageBox = Ext.Msg.wait("Please wait ...", "Saving Progress");
 
-            // Get the current layer and get the required parameters
 
-            //var index = this.layerMetadataStore.find('wms_title', currentLayer.name);
-            //var r = this.layerMetadataStore.getAt(index);
-
-            // This is the legend title e.g. "Percent of village population" etc.
-            printProvider.customParams.legendTitle = "test"; //   r.get('wms_legend');
-
-            // WMS styles and layers are required for the WMS legend
-            printProvider.customParams.wmsstyle = "vrpdeaa40";
-            printProvider.customParams.wmslayer = "village-polygon";
-            printProvider.customParams.comment = "TEST";
-
-            // This is the map title that will be placed at the top of the map
-            printProvider.customParams.mapTitle = "currentLayer.name";
-            printProvider.customParams.mapSubtitle = "currentLayer.name";
-            printProvider.customParams.disclaimer = Ext.ux.ts.tr("Boundaries, colours and denominations on this map are not authoritative.");
-            printProvider.customParams.source = Ext.ux.ts.tr("Source: Lao Population and Housing Census 2005");
-            printProvider.customParams.copyright = Ext.ux.ts.tr("Copyright: DECIDE INFO, http://www.decide.la/; Lao Statistics Bureau, Vientiane, Lao PDR, http://www.nsc.gov.la/");
         },this);
 
         // If printing was successful, close the this.waitMessageBox dialog.
@@ -801,6 +775,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
             displayInLayerSwitcher: false
         });
         layers.push(this.freehandSelectionLayer);
+        layers.push(this.printLayer);
         
         return layers;
     },
@@ -974,7 +949,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
             node.attributes.text, node.attributes.tms_url, {
                 isBaseLayer: false,
                 displayInLayerSwitcher: true,
-                grid: [],
                 layername: node.attributes.tms_layer + "@EPSG:900913@png",
                 maxExtent: [-20037508.340000, -20037508.340000, 20037508.340000, 20037508.340000],
                 opacity: 0.75,
@@ -1043,7 +1017,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                             featureStore: featureStore,
                             layer: layer,
                             opacity: 75,
-                            title: node.attributes.wms_title,
+                            title: node.attributes.text,
                             zIndex: layer.getZIndex()
                         });
 
