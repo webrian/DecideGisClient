@@ -1,5 +1,5 @@
 Ext.ns('Ext.ux');
-Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
+Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
     viewport:null,
 
     identifyAction:null,
@@ -25,8 +25,8 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
         actions.push(new GeoExt.Action({
             control:ctrl.previous,
             disabled:true,
-            iconAlign:'top',
-            icon:'/img/zoom-last.png',
+            iconAlign: 'top',
+            iconCls: 'last-zoom-button',
             text:Ext.ux.ts.tr("Previous View"),
             tooltip:Ext.ux.ts.tr('Go to previous view'),
             scale:'medium'
@@ -34,8 +34,8 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
         actions.push(new GeoExt.Action({
             control:ctrl.next,
             disabled:true,
-            icon:'/img/zoom-next.png',
             iconAlign:'top',
+            iconCls:'next-zoom-button',
             scale:'medium',
             text:Ext.ux.ts.tr("Next View"),
             tooltip:Ext.ux.ts.tr("Go to next view")
@@ -43,8 +43,8 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
         actions.push(new GeoExt.Action({
             allowDepress:false,
             control:new OpenLayers.Control.Navigation(),
-            icon:"/img/pan1.png",
             iconAlign:'top',
+            iconCls: "move-map-button",
             map:this.viewport.map,
             pressed:true,
             scale:'medium',
@@ -57,21 +57,35 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
             control:new OpenLayers.Control.ZoomBox({
                 out:false
             }),
-            icon:'/img/zoom-in1.png',
             iconAlign:'top',
+            iconCls: "zoom-in-button",
             map:this.viewport.map,
             scale:'medium',
             scope:this,
             text:Ext.ux.ts.tr('Zoom In'),
             toggleGroup:"tools",
-            tooltip:Ext.ux.ts.tr('Zoom on an area by clicking and dragging')
+            tooltip:Ext.ux.ts.tr('Zoom in')
+        }));
+        actions.push(new GeoExt.Action({
+            allowDepress:false,
+            control:new OpenLayers.Control.ZoomBox({
+                out: true
+            }),
+            iconAlign: 'top',
+            iconCls: "zoom-out-button",
+            map: this.viewport.map,
+            scale: 'medium',
+            scope: this,
+            text: Ext.ux.ts.tr('Zoom Out'),
+            toggleGroup: "tools",
+            tooltip: Ext.ux.ts.tr('Zoom out')
         }));
         actions.push(new Ext.Action({
             handler:function(){
                 this.viewport.map.setCenter(this.viewport.centroid,0);
             },
-            icon:"/img/zoom-extent1.png",
             iconAlign:'top',
+            iconCls: "full-extent-button",
             scale:'medium',
             scope:this,
             text:Ext.ux.ts.tr("Full Extent"),
@@ -93,8 +107,8 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
         this.identifyAction=new GeoExt.Action({
             activateOnEnable: true,
             deactivateOnDisable: true,
-            icon: "/img/identify.png",
             iconAlign: 'top',
+            iconCls: "identify-button",
             map: this.viewport.map,
             toggleGroup: "tools",
             allowDepress: false,
@@ -108,9 +122,8 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
         actions.push('->');
         var villageSearchStore=new Ext.data.JsonStore({
             url:'/gis/search',
-            root:'data',
-            idProperty:'vid',
-            fields:['vid','name','lon','lat']
+            idProperty:'osm_id',
+            fields:['osm_id', 'display_name','class','lon','lat']
         });
         actions.push(new Ext.form.Label({
             style:{
@@ -121,7 +134,7 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
         }));
         actions.push(new Ext.form.ComboBox({
             store:villageSearchStore,
-            displayField:'name',
+            displayField: 'display_name',
             typeAhead:true,
             mode:'remote',
             queryParam:'q',
@@ -136,12 +149,12 @@ Ext.ux.GisToolbar=Ext.extend(Ext.Toolbar,{
                 scope:this
             }
         }));
-        var gisToolbarConfig={
+        var navigationToolbarConfig={
             enableOverflow: true,
             items: actions
         }
-        Ext.apply(gisToolbarConfig,config);
-        Ext.ux.GisToolbar.superclass.constructor.call(this,gisToolbarConfig);
+        Ext.apply(navigationToolbarConfig,config);
+        Ext.ux.NavigationToolbar.superclass.constructor.call(this, navigationToolbarConfig);
     },
     
     onGetFeatureInfoClick: function(event){

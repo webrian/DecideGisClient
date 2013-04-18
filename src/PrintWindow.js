@@ -10,8 +10,6 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
 
     initComponent: function(){
 
-        
-
         var bbar = [
         {
             disabled: true,
@@ -31,14 +29,15 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                     Ext.getCmp('move-next').enable();
                 }
             },
-            icon: '/img/go-previous.png',
             iconAlign: 'top',
+            iconCls: 'go-previous-button',
             id: 'move-prev',
             scale: 'medium',
             scope: this,
             text: 'Back',
             width: 50
         },{
+            disabled: true,
             handler: function(event){
                 var l = this.getLayout();
                 var nbrItems = parseInt(l.container.items.length);
@@ -54,8 +53,8 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                     Ext.getCmp('move-next').disable();
                 }
             },
-            icon: '/img/go-next.png',
             iconAlign: 'top',
+            iconCls: 'go-next-button',
             id: 'move-next',
             scale: 'medium',
             scope: this,
@@ -72,8 +71,8 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                 }
                 this.close();
             },
-            icon: '/img/quit.png',
             iconAlign: 'top',
+            iconCls: 'quit-button',
             scale: 'medium',
             scope: this,
             text: Ext.ux.ts.tr("Quit"),
@@ -120,10 +119,28 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                     }
 
                     if(this.overlayLayer){
-
-                        console.log("have overlayLayer");
                         printMap.addLayers([this.overlayLayer]);
                     }
+
+                    var layername = this.backgroundLayer.layername.split("@")[0]
+
+                    // Get the current layer and get the required parameters
+
+                    //var index = this.layerMetadataStore.find('wms_title', currentLayer.name);
+                    //var r = this.layerMetadataStore.getAt(index);
+
+                    // This is the legend title e.g. "Percent of village population" etc.
+                    this.printProvider.customParams.legendTitle = this.backgroundLayer.name; //   r.get('wms_legend');
+
+                    // WMS styles and layers are required for the WMS legend
+                    this.printProvider.customParams.wmsstyle = "";
+                    this.printProvider.customParams.wmslayer = layername;
+                    this.printProvider.customParams.comment = "";
+
+                    
+                    this.printProvider.customParams.disclaimer = Ext.ux.ts.tr("Boundaries, colours and denominations on this map are not authoritative.");
+                    this.printProvider.customParams.source = "this.backgroundLayer.source";
+                    this.printProvider.customParams.copyright = "this.backgroundLayer.attribution";
                     
                     this.printProvider.print(printMap, this.printExtent.pages);
                 } else {
@@ -135,8 +152,8 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                     });
                 }
             },
-            icon: "/img/print.png",
             iconAlign: "top",
+            iconCls: "print-button",
             id: 'print-button',
             text: Ext.ux.ts.tr("Print"),
             scale: 'medium',
@@ -147,79 +164,69 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
         var items = [{
             id: 'card-0',
             items: [{
-                bodyStyle: {
-                    padding: "5px"
-                },
-                flex: .7,
-                items: [{
-                    anchor: '100%',
-                    fieldLabel: Ext.ux.ts.tr("Select province"),
-                    store: ['prov', 'provi2'],
-                    xtype: 'combo'
-                },{
-                    anchor: '100%',
-                    fieldLabel: Ext.ux.ts.tr("Select distrct"),
-                    store: ['dist1', 'dist2'],
-                    xtype: 'combo'
-                }],
-                labelStyle: {
-                    margin: '5px'
-                },
-                title: Ext.ux.ts.tr("Select province") + ":",
-                xtype: 'form'
-            },{
-                flex: .3,
-                items: [{
-                    flex: .5,
-                    handler: function(){
-                        // Remove first all pages before adding a new one
-                        if(this.printExtent.pages.length > 0) {
-                            for(var i = 0; i < this.printExtent.pages.length; i++){
-                                this.printExtent.removePage(this.printExtent.pages[i]);
-                            }
-                        }
-                        this.printExtent.layer.setVisibility(true);
-                        this.printExtent.addPage();
-                    },
-                    scope: this,
-                    icon: '/img/layer-add.png',
-                    iconAlign: 'top',
-                    scale: 'large',
-                    text: "Add map frame",
-                    xtype: 'button'
-                },{
-                    flex: .5,
-                    handler: function(){
-                        this.printExtent.layer.setVisibility(false);
-                        // Remove all pages
-                        if(this.printExtent.pages.length > 0) {
-                            for(var i = 0; i < this.printExtent.pages.length; i++){
-                                this.printExtent.removePage(this.printExtent.pages[i]);
-                            }
-                        }
-                    },
-                    icon: '/img/layer-delete.png',
-                    iconAlign: 'top',
-                    scale: 'large',
-                    scope: this,
-
-                    text: "Remove frame",
-                    xtype: 'button'
-                }],
-                layout: 'hbox',
-                layoutConfig: {
-                    align: 'stretch'
-                },
-
-                title: Ext.ux.ts.tr("or set custom extent") + ":",
-                xtype: 'panel'
+                fieldLabel: Ext.ux.ts.tr('Layout'),
+                mode: 'local',
+                typeAhead: true,
+                triggerAction: 'all',
+                valueField: 'value',
+                displayField: 'name',
+                forceSelection: true,
+                selectOnFocus: true,
+                store: this.printProvider.layouts,
+                plugins: new GeoExt.plugins.PrintProviderField({
+                    printProvider: this.printProvider
+                }),
+                xtype: 'combo'
             }],
-            layout: 'vbox',
-            layoutConfig: {
-                align: 'stretch'
-            },
+            buttons: [{
+                flex: .5,
+                handler: function(){
+                    // Remove first all pages before adding a new one
+                    if(this.printExtent.pages.length > 0) {
+                        for(var i = 0; i < this.printExtent.pages.length; i++){
+                            this.printExtent.removePage(this.printExtent.pages[i]);
+                        }
+                    }
+                    this.printExtent.layer.setVisibility(true);
+                    this.printExtent.addPage();
+                    // Enable the next and print button, if title and subtitle
+                    // fields are valid
+                    Ext.getCmp('move-next').enable();
+                    if(Ext.getCmp('title-textfield').isValid() && Ext.getCmp('subtitle-textfield').isValid()){
+                        Ext.getCmp('print-button').enable();
+                    }
+                },
+                scope: this,
+                iconAlign: 'top',
+                iconCls: 'add-frame-button',
+                scale: 'medium',
+                text: Ext.ux.ts.tr("Add map frame"),
+                xtype: 'button'
+            },{
+                flex: .5,
+                handler: function(){
+                    this.printExtent.layer.setVisibility(false);
+                    // Remove all pages
+                    if(this.printExtent.pages.length > 0) {
+                        for(var i = 0; i < this.printExtent.pages.length; i++){
+                            this.printExtent.removePage(this.printExtent.pages[i]);
+                        }
+                    }
+                    // Disable the next and print button
+                    Ext.getCmp('move-next').disable();
+                    Ext.getCmp('print-button').disable();
+                },
+                iconAlign: 'top',
+                iconCls: 'remove-frame-button',
+                scale: 'medium',
+                scope: this,
 
-            xtype: 'container'
+                text: Ext.ux.ts.tr("Remove frame"),
+                xtype: 'button'
+            }],
+            padding: '5px',
+            title: Ext.ux.ts.tr("Set layout and map frame"),
+            xtype: 'form'
         },{
             cm: new Ext.grid.ColumnModel([{
                 id: "title",
@@ -258,7 +265,6 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
             selModel: new Ext.grid.RowSelectionModel({
                 listeners: {
                     'rowselect': function(selModel, rowIndex, record){
-                        console.log("rowselect");
                         var l = record.data.layer.clone();
                         l.zoomOffset = 0;
                         this.overlayLayer = l;
@@ -278,25 +284,48 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                 padding: "5px"
             },
             id: 'card-3',
+            // This is the map title and subtitle that will be placed at the top of the map
             items: [{
+                allowBlank: false,
                 anchor: '100%',
                 fieldLabel: Ext.ux.ts.tr("Title"),
+                id: 'title-textfield',
+                listeners: {
+                    invalid: function(field, msg) {
+                        Ext.getCmp('print-button').disable();
+                    },
+                    valid: function(field) {
+                        if(Ext.getCmp('subtitle-textfield').isValid()){
+                            Ext.getCmp('print-button').enable();
+                        }
+                    }
+                },
+                name: 'mapTitle',
+                plugins: new GeoExt.plugins.PrintProviderField({
+                    printProvider: this.printProvider
+                }),
                 xtype: 'textfield'
             },{
+                allowBlank: false,
                 anchor: '100%',
                 fieldLabel: Ext.ux.ts.tr('Subtitle'),
+                id: 'subtitle-textfield',
+                listeners: {
+                    invalid: function(field, msg) {
+                        Ext.getCmp('print-button').disable();
+                    },
+                    valid: function(field) {
+                        if(Ext.getCmp('title-textfield').isValid()){
+                            Ext.getCmp('print-button').enable();
+                        }
+                    }
+                },
                 name: 'mapSubtitle',
-                //allowBlank:false,
                 plugins: new GeoExt.plugins.PrintProviderField({
                     printProvider: this.printProvider
                 }),
                 xtype: 'textfield'
             }],
-            listeners: {
-                activate: function(comp){
-                    Ext.getCmp('print-button').enable();
-                }
-            },
             title: Ext.ux.ts.tr("Add additional information") + ":",
             xtype: 'form'
         }];

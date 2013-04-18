@@ -35,6 +35,7 @@ Ext.ux.SubsetPanel = Ext.extend(Ext.form.FormPanel, {
      * @param {Object} config
      */
     constructor: function(config) {
+        console.warn("@deprecated");
         config = config || {};
 
         this.viewport = config.viewport;

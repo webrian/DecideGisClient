@@ -32,6 +32,9 @@ Ext.ux.PrintPanel = Ext.extend(Ext.FormPanel, {
      * @param {Object} config
      */
     constructor: function(config){
+
+        console.warn("@deprecated");
+
         config = config || {};
 
         this.printProvider = config.printProvider ? config.printProvider : null;
