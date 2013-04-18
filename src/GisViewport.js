@@ -949,7 +949,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
             node.attributes.text, node.attributes.tms_url, {
                 isBaseLayer: false,
                 displayInLayerSwitcher: true,
-                grid: [],
                 layername: node.attributes.tms_layer + "@EPSG:900913@png",
                 maxExtent: [-20037508.340000, -20037508.340000, 20037508.340000, 20037508.340000],
                 opacity: 0.75,
@@ -1018,7 +1017,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                             featureStore: featureStore,
                             layer: layer,
                             opacity: 75,
-                            title: node.attributes.wms_title,
+                            title: node.attributes.text,
                             zIndex: layer.getZIndex()
                         });
 
