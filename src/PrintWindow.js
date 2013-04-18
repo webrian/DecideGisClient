@@ -189,7 +189,12 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                     }
                     this.printExtent.layer.setVisibility(true);
                     this.printExtent.addPage();
+                    // Enable the next and print button, if title and subtitle
+                    // fields are valid
                     Ext.getCmp('move-next').enable();
+                    if(Ext.getCmp('title-textfield').isValid() && Ext.getCmp('subtitle-textfield').isValid()){
+                        Ext.getCmp('print-button').enable();
+                    }
                 },
                 scope: this,
                 iconAlign: 'top',
@@ -207,7 +212,9 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                             this.printExtent.removePage(this.printExtent.pages[i]);
                         }
                     }
+                    // Disable the next and print button
                     Ext.getCmp('move-next').disable();
+                    Ext.getCmp('print-button').disable();
                 },
                 iconAlign: 'top',
                 iconCls: 'remove-frame-button',
@@ -279,27 +286,46 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
             id: 'card-3',
             // This is the map title and subtitle that will be placed at the top of the map
             items: [{
+                allowBlank: false,
                 anchor: '100%',
                 fieldLabel: Ext.ux.ts.tr("Title"),
+                id: 'title-textfield',
+                listeners: {
+                    invalid: function(field, msg) {
+                        Ext.getCmp('print-button').disable();
+                    },
+                    valid: function(field) {
+                        if(Ext.getCmp('subtitle-textfield').isValid()){
+                            Ext.getCmp('print-button').enable();
+                        }
+                    }
+                },
                 name: 'mapTitle',
                 plugins: new GeoExt.plugins.PrintProviderField({
                     printProvider: this.printProvider
                 }),
                 xtype: 'textfield'
             },{
+                allowBlank: false,
                 anchor: '100%',
                 fieldLabel: Ext.ux.ts.tr('Subtitle'),
+                id: 'subtitle-textfield',
+                listeners: {
+                    invalid: function(field, msg) {
+                        Ext.getCmp('print-button').disable();
+                    },
+                    valid: function(field) {
+                        if(Ext.getCmp('title-textfield').isValid()){
+                            Ext.getCmp('print-button').enable();
+                        }
+                    }
+                },
                 name: 'mapSubtitle',
                 plugins: new GeoExt.plugins.PrintProviderField({
                     printProvider: this.printProvider
                 }),
                 xtype: 'textfield'
             }],
-            listeners: {
-                activate: function(comp){
-                    Ext.getCmp('print-button').enable();
-                }
-            },
             title: Ext.ux.ts.tr("Add additional information") + ":",
             xtype: 'form'
         }];
