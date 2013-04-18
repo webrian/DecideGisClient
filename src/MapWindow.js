@@ -67,22 +67,31 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
             })
         }
 
-        var hillshade = new OpenLayers.Layer.TMS(
-            "Hillshade", "/tms/", {
+        /**
+         * Define the base layer TMS URL and name in the HTML:
+         * <script type="text/javascript">
+         * Ext.ns("ux");
+         * Ext.ux.baseLayerUrl = "http://url/to/tilemapserver/";
+         * Ext.ux.baseLayerName = "layername";
+         * </script>
+         */
+        var baselayer = new OpenLayers.Layer.TMS(
+            "Base Layer", Ext.ux.baseLayerUrl, {
                 isBaseLayer: true,
                 displayInLayerSwitcher: false,
-                layername: "topo",
-                type: "png",
-                // set if different than the bottom left of map.maxExtent
+                layername: Ext.ux.baseLayerName,
+                // Use PNG if not otherwise specified
+                type: Ext.ux.baseLayerFormat ? Ext.ux.baseLayerFormat : "png",
+                // Tile origin must correspond to the global mercator grid origin
                 tileOrigin: new OpenLayers.LonLat(-20037508.340000, -20037508.340000),
                 zoomOffset: 6
             })
-        hillshade.id = "hillshade";
+        baselayer.id = "baselayer";
 
         this.layerStore = new GeoExt.data.LayerStore({
             autoLoad: false,
             initDir: GeoExt.data.LayerStore.STORE_TO_MAP,
-            layers: [hillshade]
+            layers: [baselayer]
         });
 
         var toolbarItems = [];
