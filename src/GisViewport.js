@@ -454,9 +454,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                                 var lc_height = r.legend.height > 150 ? r.legend.height : 150;
                                 var lc_width = r.legend.width > 150 ? r.legend.width : 150
 
-                                // Hide the loading mask before opening the
-                                // legend window
-
+                                // The legend window
                                 var w = new Ext.Window({
                                     autoScroll: true,
                                     // Add a bottom bar with a close button
@@ -466,23 +464,44 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                                         },
                                         text: Ext.ux.ts.tr("Close")
                                     }],
-                                    layout: 'hbox',
-                                    items:[{
-                                        html: r.text,
-                                        width: 220,
+                                    
+                                    layout: 'border',
+                                    height: (lc_height + 130),
+                                    items: [{
+                                        autoScroll: true,
+                                        // Add some margin to the inner body style
+                                        style: {
+                                            padding: '5px'
+                                        },
+                                        items:[{
+                                            html: r.text,
+                                            width: 220,
+                                            xtype: 'container'
+                                        },{
+                                            data: r.legend,
+                                            height: lc_height,
+                                            width: lc_width,
+                                            tpl: t,
+                                            xtype: 'container'
+                                        }],
+                                        layout: 'hbox',
+                                        region: 'center',
                                         xtype: 'container'
                                     },{
-                                        data: r.legend,
-                                        height: lc_height,
-                                        width: lc_width,
-                                        tpl: t,
+                                        html: rec.data.layer.attribution,
+                                        region: 'south',
+                                        // Add some padding to the style
+                                        style: {
+                                            padding: '5px'
+                                        },
                                         xtype: 'container'
                                     }],
-                                    height: (lc_height + 100),
                                     title: rec.data.title,
-                                    width: (lc_width + 240)
+                                    width: (lc_width + 250)
                                 }).show();
 
+                                // Hide the loading mask after opening the
+                                // legend window
                                 loadingMask.hide();
 
                             },
@@ -613,7 +632,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
             fields: this.currentFields,
             autoLoad: true
         });
-        */
+         */
 
         /**
          *
@@ -947,6 +966,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
 
         var layer = new OpenLayers.Layer.TMS(
             node.attributes.text, node.attributes.tms_url, {
+                attribution: node.attributes.attribution ? node.attributes.attribution : "",
                 isBaseLayer: false,
                 displayInLayerSwitcher: true,
                 layername: node.attributes.tms_layer + "@EPSG:900913@png",
