@@ -37,6 +37,7 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
             text: 'Back',
             width: 50
         },{
+            disabled: true,
             handler: function(event){
                 var l = this.getLayout();
                 var nbrItems = parseInt(l.container.items.length);
@@ -163,96 +164,62 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
         var items = [{
             id: 'card-0',
             items: [{
-                bodyStyle: {
-                    padding: "5px"
-                },
-                flex: .7,
-                items: [{
-                    fieldLabel: Ext.ux.ts.tr('Layout'),
-                    mode: 'local',
-                    typeAhead: true,
-                    triggerAction: 'all',
-                    valueField: 'value',
-                    displayField: 'name',
-                    forceSelection: true,
-                    selectOnFocus: true,
-                    store: this.printProvider.layouts,
-                    plugins: new GeoExt.plugins.PrintProviderField({
-                        printProvider: this.printProvider
-                    }),
-                    xtype: 'combo'
-                }],
-                /*
-                items: [{
-                    anchor: '100%',
-                    fieldLabel: Ext.ux.ts.tr("Select province"),
-                    store: ['prov', 'provi2'],
-                    xtype: 'combo'
-                },{
-                    anchor: '100%',
-                    fieldLabel: Ext.ux.ts.tr("Select distrct"),
-                    store: ['dist1', 'dist2'],
-                    xtype: 'combo'
-                }],
-                */
-                labelStyle: {
-                    margin: '5px'
-                },
-                title: Ext.ux.ts.tr("Select province") + ":",
-                xtype: 'form'
-            },{
-                flex: .3,
-                items: [{
-                    flex: .5,
-                    handler: function(){
-                        // Remove first all pages before adding a new one
-                        if(this.printExtent.pages.length > 0) {
-                            for(var i = 0; i < this.printExtent.pages.length; i++){
-                                this.printExtent.removePage(this.printExtent.pages[i]);
-                            }
-                        }
-                        this.printExtent.layer.setVisibility(true);
-                        this.printExtent.addPage();
-                    },
-                    scope: this,
-                    iconAlign: 'top',
-                    iconCls: 'add-frame-button',
-                    scale: 'large',
-                    text: "Add map frame",
-                    xtype: 'button'
-                },{
-                    flex: .5,
-                    handler: function(){
-                        this.printExtent.layer.setVisibility(false);
-                        // Remove all pages
-                        if(this.printExtent.pages.length > 0) {
-                            for(var i = 0; i < this.printExtent.pages.length; i++){
-                                this.printExtent.removePage(this.printExtent.pages[i]);
-                            }
-                        }
-                    },
-                    iconAlign: 'top',
-                    iconCls: 'remove-frame-button',
-                    scale: 'large',
-                    scope: this,
-
-                    text: "Remove frame",
-                    xtype: 'button'
-                }],
-                layout: 'hbox',
-                layoutConfig: {
-                    align: 'stretch'
-                },
-
-                title: Ext.ux.ts.tr("or set custom extent") + ":",
-                xtype: 'panel'
+                fieldLabel: Ext.ux.ts.tr('Layout'),
+                mode: 'local',
+                typeAhead: true,
+                triggerAction: 'all',
+                valueField: 'value',
+                displayField: 'name',
+                forceSelection: true,
+                selectOnFocus: true,
+                store: this.printProvider.layouts,
+                plugins: new GeoExt.plugins.PrintProviderField({
+                    printProvider: this.printProvider
+                }),
+                xtype: 'combo'
             }],
-            layout: 'vbox',
-            layoutConfig: {
-                align: 'stretch'
-            },
+            buttons: [{
+                flex: .5,
+                handler: function(){
+                    // Remove first all pages before adding a new one
+                    if(this.printExtent.pages.length > 0) {
+                        for(var i = 0; i < this.printExtent.pages.length; i++){
+                            this.printExtent.removePage(this.printExtent.pages[i]);
+                        }
+                    }
+                    this.printExtent.layer.setVisibility(true);
+                    this.printExtent.addPage();
+                    Ext.getCmp('move-next').enable();
+                },
+                scope: this,
+                iconAlign: 'top',
+                iconCls: 'add-frame-button',
+                scale: 'medium',
+                text: Ext.ux.ts.tr("Add map frame"),
+                xtype: 'button'
+            },{
+                flex: .5,
+                handler: function(){
+                    this.printExtent.layer.setVisibility(false);
+                    // Remove all pages
+                    if(this.printExtent.pages.length > 0) {
+                        for(var i = 0; i < this.printExtent.pages.length; i++){
+                            this.printExtent.removePage(this.printExtent.pages[i]);
+                        }
+                    }
+                    Ext.getCmp('move-next').disable();
+                },
+                iconAlign: 'top',
+                iconCls: 'remove-frame-button',
+                scale: 'medium',
+                scope: this,
 
-            xtype: 'container'
+                text: Ext.ux.ts.tr("Remove frame"),
+                xtype: 'button'
+            }],
+            padding: '5px',
+            title: Ext.ux.ts.tr("Set layout and map frame"),
+            xtype: 'form'
         },{
             cm: new Ext.grid.ColumnModel([{
                 id: "title",
@@ -291,7 +258,6 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
             selModel: new Ext.grid.RowSelectionModel({
                 listeners: {
                     'rowselect': function(selModel, rowIndex, record){
-                        console.log("rowselect");
                         var l = record.data.layer.clone();
                         l.zoomOffset = 0;
                         this.overlayLayer = l;
