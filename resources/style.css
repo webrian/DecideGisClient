@@ -42,11 +42,30 @@ GIS navigation buttons
 .zoom-in-button {
     background-image: url(img/zoom-in1.png) !important;
 }
+.zoom-out-button {
+    background-image: url(img/zoom-out1.png) !important;
+}
 .full-extent-button {
     background-image: url(img/zoom-extent1.png) !important;
 }
 .identify-button {
     background-image: url(img/identify.png) !important;
+}
+/** Icons in print window **/
+.add-frame-button {
+    background-image: url(img/layer-add.png) !important;
+}
+.remove-frame-button {
+    background-image: url(img/layer-delete.png) !important;
+}
+.quit-button {
+    background-image: url(img/quit.png) !important;
+}
+.go-previous-button {
+    background-image: url(img/go-previous.png) !important;
+}
+.go-next-button {
+    background-image: url(img/go-next.png) !important;
 }
 /** Prevent pink tiles in OpenLayers **/
 img.olImageLoadError {
