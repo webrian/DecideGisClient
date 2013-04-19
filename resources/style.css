@@ -80,25 +80,25 @@ img.olImageLoadError {
     font-size: 11px  ! important;
 }
 /** Small icons in the layer tree and list to indicate geometry type **/
-div.point-layer img.x-tree-node-icon {
+div.POINT img.x-tree-node-icon {
     background-image: url(/img/point-16.png) !important;
     height:16px !important;
     width:16px !important;
 }
 
-div.linestring-layer img.x-tree-node-icon {
+div.LINESTRING img.x-tree-node-icon {
     background-image: url(/img/linestring-16.png) !important;
     height:16px !important;
     width:16px !important;
 }
 
-div.polygon-layer img.x-tree-node-icon {
+div.POLYGON img.x-tree-node-icon {
     background-image: url(/img/polygon-16.png) !important;
     height:16px !important;
     width:16px !important;
 }
 
-div.raster-layer img.x-tree-node-icon {
+div.RASTER img.x-tree-node-icon {
     background-image: url(/img/raster-16.png) !important;
     height:16px !important;
     width:16px !important;

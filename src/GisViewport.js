@@ -964,17 +964,43 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
         });
         layerGridLoadingMask.show();
 
+        // Translate the geometry type to an OpenLayers geometry. Add to the layer
+        // an attribute "geometryType" like in a OpenLayers. vector layers although
+        // it's an TMS layer.
+        var geometryType = "OpenLayers.Geometry.Collection"
+        switch(node.attributes.cls) {
+            case "POINT":
+                geometryType = "OpenLayers.Geometry.Point";
+                break;
+            case "MULTIPOINT":
+                geometryType = "OpenLayers.Geometry.MultiPoint";
+                break;
+            case "LINESTRING":
+                geometryType = "OpenLayers.Geometry.LineString";
+                break;
+            case "MULTILINESTRING":
+                geometryType = "OpenLayers.Geometry.MultiLineString";
+                break;
+            case "POLYGON":
+                geometryType = "OpenLayers.Geometry.Polygon";
+                break;
+            case "MULTIPOLYGON":
+                geometryType = "OpenLayers.Geometry.MultiPolygon";
+                break;
+        }
+
         var layer = new OpenLayers.Layer.TMS(
             node.attributes.text, node.attributes.tms_url, {
                 attribution: node.attributes.attribution ? node.attributes.attribution : "",
-                isBaseLayer: false,
                 displayInLayerSwitcher: true,
+                geometryType: geometryType,
+                isBaseLayer: false,
                 layername: node.attributes.tms_layer + "@EPSG:900913@png",
                 maxExtent: [-20037508.340000, -20037508.340000, 20037508.340000, 20037508.340000],
                 opacity: 0.75,
                 sphericalMercator: true,
                 type: "png",
-                // set if different than the bottom left of map.maxExtent
+                // Set if different than the bottom left of map.maxExtent
                 tileOrigin: new OpenLayers.LonLat(-20037508.340000, -20037508.340000),
                 zoomOffset: 6
             });

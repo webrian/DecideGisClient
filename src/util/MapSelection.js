@@ -190,17 +190,47 @@ Ext.ux.MapSelection = Ext.extend(Ext.util.Observable, {
      * @returns {OpenLayers.Style}
      */
     createSelectStyle: function(filter) {
+
+        // Create a symbolizer corresponding to the geometry type of the layer
+        var symbolizer = {};
+        // Default selection color
+        var selectColor = "#00ffff";
+        if(this.layer.geometryType == "OpenLayers.Geometry.Point"
+            || this.layer.geometryType == "OpenLayers.Geometry.MultiPoint"){
+            symbolizer = {
+                "Point": {
+                    fillColor: selectColor,
+                    pointRadius: 5,
+                    strokeColor: selectColor
+                }
+            }
+        }
+        else if(this.layer.geometryType == "OpenLayers.Geometry.LineString"
+            || this.layer.geometryType == "OpenLayers.Geometry.MultiLineString"){
+            symbolizer = {
+                "Line": {
+                    strokeColor: selectColor,
+                    strokeWidth: 3
+                }
+            }
+        }
+        else if(this.layer.geometryType == "OpenLayers.Geometry.Polygon"
+            || this.layer.geometryType == "OpenLayers.Geometry.MultiPolygon"){
+            symbolizer = {
+                "Polygon": {
+                    fill: true,
+                    fillColor: selectColor,
+                    stroke: false
+                }
+            }
+        }
+
+        // Create the select rule with the symbolizer
         var selectRule = new OpenLayers.Rule({
             name: "Selection",
             title: "Selection",
             filter: filter,
-            symbolizer: {
-                "Polygon": {
-                    fill: true,
-                    fillColor: "#00ffff",
-                    stroke: false
-                }
-            }
+            symbolizer: symbolizer
         });
 
         var layername = this.layer.layername.split("@")[0];
