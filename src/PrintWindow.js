@@ -10,6 +10,152 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
 
     initComponent: function(){
 
+        // Textfield to add the map title
+        var titleTextfield = new Ext.form.TextField({
+            allowBlank: false,
+            anchor: '100%',
+            fieldLabel: Ext.ux.ts.tr("Title"),
+            listeners: {
+                invalid: function(field, msg) {
+                    printButton.disable();
+                },
+                valid: function(field) {
+                    if(subtitleTextField.isValid()){
+                        printButton.enable();
+                    }
+                }
+            },
+            name: 'mapTitle',
+            plugins: new GeoExt.plugins.PrintProviderField({
+                printProvider: this.printProvider
+            })
+        });
+
+        // Textfield to add the map subtitle
+        var subtitleTextField = new Ext.form.TextField({
+            allowBlank: false,
+            anchor: '100%',
+            fieldLabel: Ext.ux.ts.tr('Subtitle'),
+            listeners: {
+                invalid: function(field, msg) {
+                    printButton.disable();
+                },
+                valid: function(field) {
+                    if(titleTextfield.isValid()){
+                        printButton.enable();
+                    }
+                }
+            },
+            name: 'mapSubtitle',
+            plugins: new GeoExt.plugins.PrintProviderField({
+                printProvider: this.printProvider
+            }),
+            xtype: 'textfield'
+        });
+
+        var printButton = new Ext.Button({
+            disabled: true,
+            handler: function(){
+                if(this.printExtent.pages.length > 0){
+                    //this.printExtent.print(this.viewport.map);
+
+                    var printMap = new OpenLayers.Map({
+                        allOverlays: false,
+                        displayProjection: new OpenLayers.Projection("EPSG:4326"),
+                        maxExtent: new OpenLayers.Bounds(-20037508.340000, -20037508.340000, 20037508.340000, 20037508.340000),
+                        projection: new OpenLayers.Projection("EPSG:900913"),
+                        // Set fixed resolutions from zoom level 6 to 12 (in standard OL levels)
+                        resolutions: [156543.0339,78271.51695,39135.75848,19567.87924,9783.939619,4891.969809,2445.9849046875,1222.99245234375,611.496226171875,305.7481130859375,152.87405654296876,76.43702827148438,38.21851413574219],
+                        units: "m"
+                    });
+                    var hillshade = new OpenLayers.Layer.TMS(
+                        "Hillshade", "/tms/", {
+                            isBaseLayer: true,
+                            displayInLayerSwitcher: false,
+                            layername: "topo",
+                            type: "png",
+                            // set if different than the bottom left of map.maxExtent
+                            tileOrigin: new OpenLayers.LonLat(-20037508.340000, -20037508.340000)
+                        });
+                    hillshade.id = "hillshade";
+
+                    printMap.addLayers([hillshade]);
+
+                    // If a background layer is selected, add it to the printMap
+                    // and add the custom parameters to the print provider
+                    if(this.backgroundLayer){
+                        printMap.addLayers([this.backgroundLayer]);
+                        // This is the layer title e.g. "Percent of village population" etc.
+                        this.printProvider.customParams.layerTitle = this.backgroundLayer.name;
+
+                        var layername = this.backgroundLayer.layername.split("@")[0];
+                        this.printProvider.customParams.layerName = layername;
+
+                        // Add source and attribution
+                        this.printProvider.customParams.layerSource = "Source missing";
+                        if(this.backgroundLayer.attribution) {
+                            this.printProvider.customParams.layerCopyright = this.backgroundLayer.attribution;
+                        }
+
+                    }
+
+                    // If an overlay layer is selectd, add it to the printMap
+                    // and add the custom parameters to the print provider
+                    if(this.overlayLayer){
+                        printMap.addLayers([this.overlayLayer]);
+                        // The layer title
+                        this.printProvider.customParams.overlayTitle = this.overlayLayer.name;
+                        // Get the wms layer name
+                        this.printProvider.customParams.overlayName = this.overlayLayer.layername.split("@")[0];
+                        this.printProvider.customParams.overlaySource = "Source missing";
+                        if(this.overlayLayer.attribution) {
+                            this.printProvider.customParams.overlayCopyright = this.overlayLayer.attribution;
+                        }
+
+                    }
+
+                    // Add the general disclaimer
+                    this.printProvider.customParams.disclaimer = Ext.ux.ts.tr("Boundaries, colours and denominations on this map are not authoritative.");
+
+
+                    this.printProvider.print(printMap, this.printExtent.pages);
+                } else {
+                    Ext.Msg.show({
+                        title:'Missing Print Frame',
+                        msg: 'Please add first a print frame to the map.',
+                        buttons: Ext.Msg.OK,
+                        icon: Ext.MessageBox.WARNING
+                    });
+                }
+            },
+            iconAlign: "top",
+            iconCls: "print-button",
+            text: Ext.ux.ts.tr("Print"),
+            scale: 'medium',
+            scope: this,
+            width: 50
+        });
+
+        var quitButton = new Ext.Button({
+            handler: function(){
+                this.printExtent.layer.setVisibility(false);
+                // Remove all pages
+                if(this.printExtent.pages.length > 0) {
+                    for(var i = 0; i < this.printExtent.pages.length; i++){
+                        this.printExtent.removePage(this.printExtent.pages[i]);
+                    }
+                }
+                this.printProvider.customParams = {}
+                this.close();
+            },
+            iconAlign: 'top',
+            iconCls: 'quit-button',
+            scale: 'medium',
+            scope: this,
+            text: Ext.ux.ts.tr("Quit"),
+            width: 50
+        });
+
         var bbar = [
         {
             disabled: true,
@@ -60,107 +206,7 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
             scope: this,
             text: 'Next',
             width: 50
-        },'->', {
-            handler: function(){
-                this.printExtent.layer.setVisibility(false);
-                // Remove all pages
-                if(this.printExtent.pages.length > 0) {
-                    for(var i = 0; i < this.printExtent.pages.length; i++){
-                        this.printExtent.removePage(this.printExtent.pages[i]);
-                    }
-                }
-                this.close();
-            },
-            iconAlign: 'top',
-            iconCls: 'quit-button',
-            scale: 'medium',
-            scope: this,
-            text: Ext.ux.ts.tr("Quit"),
-            width: 50
-        },{
-            disabled: true,
-            handler: function(){
-                if(this.printExtent.pages.length > 0){
-                    //this.printExtent.print(this.viewport.map);
-
-                    var printMap = new OpenLayers.Map({
-                        allOverlays: false,
-                        displayProjection: new OpenLayers.Projection("EPSG:4326"),
-                        maxExtent: new OpenLayers.Bounds(-20037508.340000, -20037508.340000, 20037508.340000, 20037508.340000),
-                        projection: new OpenLayers.Projection("EPSG:900913"),
-                        // Set fixed resolutions from zoom level 6 to 12 (in standard OL levels)
-                        resolutions: [156543.0339,78271.51695,39135.75848,19567.87924,9783.939619,4891.969809,2445.9849046875,1222.99245234375,611.496226171875,305.7481130859375,152.87405654296876,76.43702827148438,38.21851413574219],
-                        units: "m"
-                    });
-                    var hillshade = new OpenLayers.Layer.TMS(
-                        "Hillshade", "/tms/", {
-                            isBaseLayer: true,
-                            displayInLayerSwitcher: false,
-                            layername: "topo",
-                            type: "png",
-                            // set if different than the bottom left of map.maxExtent
-                            tileOrigin: new OpenLayers.LonLat(-20037508.340000, -20037508.340000)
-                        });
-                    hillshade.id = "hillshade";
-                    /*var overlay = new OpenLayers.Layer.TMS(
-                        "Overlay", "http://localhost:8080/geoserver/gwc/service/tms/", {
-                            isBaseLayer: false,
-                            displayInLayerSwitcher: false,
-                            layername: "census2005:pop_married_pct@EPSG:900913@png",
-                            type: "png",
-                            // set if different than the bottom left of map.maxExtent
-                            tileOrigin: new OpenLayers.LonLat(-20037508.340000, -20037508.340000)
-                        });
-                    overlay.id = "overlay"*/
-                    printMap.addLayers([hillshade]);
-
-                    if(this.backgroundLayer){
-                        printMap.addLayers([this.backgroundLayer]);
-                    }
-
-                    if(this.overlayLayer){
-                        printMap.addLayers([this.overlayLayer]);
-                    }
-
-                    var layername = this.backgroundLayer.layername.split("@")[0]
-
-                    // Get the current layer and get the required parameters
-
-                    //var index = this.layerMetadataStore.find('wms_title', currentLayer.name);
-                    //var r = this.layerMetadataStore.getAt(index);
-
-                    // This is the legend title e.g. "Percent of village population" etc.
-                    this.printProvider.customParams.legendTitle = this.backgroundLayer.name; //   r.get('wms_legend');
-
-                    // WMS styles and layers are required for the WMS legend
-                    this.printProvider.customParams.wmsstyle = "";
-                    this.printProvider.customParams.wmslayer = layername;
-                    this.printProvider.customParams.comment = "";
-
-                    
-                    this.printProvider.customParams.disclaimer = Ext.ux.ts.tr("Boundaries, colours and denominations on this map are not authoritative.");
-                    this.printProvider.customParams.source = "this.backgroundLayer.source";
-                    this.printProvider.customParams.copyright = "this.backgroundLayer.attribution";
-                    
-                    this.printProvider.print(printMap, this.printExtent.pages);
-                } else {
-                    Ext.Msg.show({
-                        title:'Missing Print Frame',
-                        msg: 'Please add first a print frame to the map.',
-                        buttons: Ext.Msg.OK,
-                        icon: Ext.MessageBox.WARNING
-                    });
-                }
-            },
-            iconAlign: "top",
-            iconCls: "print-button",
-            id: 'print-button',
-            text: Ext.ux.ts.tr("Print"),
-            scale: 'medium',
-            scope: this,
-            width: 50,
-            xtype: 'button'
-        }];
+        },'->', quitButton, printButton];
         var items = [{
             id: 'card-0',
             items: [{
@@ -192,8 +238,8 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                     // Enable the next and print button, if title and subtitle
                     // fields are valid
                     Ext.getCmp('move-next').enable();
-                    if(Ext.getCmp('title-textfield').isValid() && Ext.getCmp('subtitle-textfield').isValid()){
-                        Ext.getCmp('print-button').enable();
+                    if(titleTextfield.isValid() && subtitleTextField.isValid()){
+                        printButton.enable();
                     }
                 },
                 scope: this,
@@ -214,7 +260,7 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                     }
                     // Disable the next and print button
                     Ext.getCmp('move-next').disable();
-                    Ext.getCmp('print-button').disable();
+                    printButton.disable();
                 },
                 iconAlign: 'top',
                 iconCls: 'remove-frame-button',
@@ -285,47 +331,7 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
             },
             id: 'card-3',
             // This is the map title and subtitle that will be placed at the top of the map
-            items: [{
-                allowBlank: false,
-                anchor: '100%',
-                fieldLabel: Ext.ux.ts.tr("Title"),
-                id: 'title-textfield',
-                listeners: {
-                    invalid: function(field, msg) {
-                        Ext.getCmp('print-button').disable();
-                    },
-                    valid: function(field) {
-                        if(Ext.getCmp('subtitle-textfield').isValid()){
-                            Ext.getCmp('print-button').enable();
-                        }
-                    }
-                },
-                name: 'mapTitle',
-                plugins: new GeoExt.plugins.PrintProviderField({
-                    printProvider: this.printProvider
-                }),
-                xtype: 'textfield'
-            },{
-                allowBlank: false,
-                anchor: '100%',
-                fieldLabel: Ext.ux.ts.tr('Subtitle'),
-                id: 'subtitle-textfield',
-                listeners: {
-                    invalid: function(field, msg) {
-                        Ext.getCmp('print-button').disable();
-                    },
-                    valid: function(field) {
-                        if(Ext.getCmp('title-textfield').isValid()){
-                            Ext.getCmp('print-button').enable();
-                        }
-                    }
-                },
-                name: 'mapSubtitle',
-                plugins: new GeoExt.plugins.PrintProviderField({
-                    printProvider: this.printProvider
-                }),
-                xtype: 'textfield'
-            }],
+            items: [ titleTextfield, subtitleTextField],
             title: Ext.ux.ts.tr("Add additional information") + ":",
             xtype: 'form'
         }];
@@ -335,7 +341,6 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
             activeItem: 0,
             bbar: bbar,
             closable: false,
-            id: 'print-wizard-window',
             items: items,
             layout: 'card',
             title: Ext.ux.ts.tr('Map printing wizard')
