@@ -222,9 +222,7 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
             map: this.map,
             scale: 'medium',
             toggleGroup: "toolbarToggleGroup",
-            tooltip: Ext.ux.ts.tr('Zoom in'),
-            tooltipType: 'title'
-            
+            tooltip: Ext.ux.ts.tr('Zoom in')
         });
         toolbarItems.push(zoomBoxAction);
 
@@ -235,7 +233,6 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
                 var zoomInAction = new GeoExt.Action({
                     icon: 'img/zoom-in.png',
                     tooltip: Ext.ux.ts.tr('actionZoomIn'),
-                    tooltipType: 'title',
                     control: zoomInControl,
                     map: map
                 });
@@ -250,8 +247,7 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
             iconCls: 'zoom-out-button',
             map: this.map,
             scale: 'medium',
-            tooltip: Ext.ux.ts.tr('Zoom out'),
-            tooltipType: 'title'
+            tooltip: Ext.ux.ts.tr('Zoom out')
         });
         toolbarItems.push(zoomOutAction);
                
@@ -263,8 +259,7 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
             iconCls: 'full-extent-button',
             scale: 'medium',
             scope: this,
-            tooltip: Ext.ux.ts.tr('Zoom to full extent'),
-            tooltipType: 'title'
+            tooltip: Ext.ux.ts.tr('Zoom to full extent')
         });
         toolbarItems.push(zoomToMaxExtent);
 
