@@ -27,7 +27,6 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             disabled:true,
             iconAlign: 'top',
             iconCls: 'last-zoom-button',
-            text:Ext.ux.ts.tr("Previous View"),
             tooltip:Ext.ux.ts.tr('Go to previous view'),
             scale:'medium'
         }));
@@ -37,8 +36,7 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             iconAlign:'top',
             iconCls:'next-zoom-button',
             scale:'medium',
-            text:Ext.ux.ts.tr("Next View"),
-            tooltip:Ext.ux.ts.tr("Go to next view")
+            tooltip:Ext.ux.ts.tr('Go to next view')
         }));
         actions.push(new GeoExt.Action({
             allowDepress:false,
@@ -48,9 +46,8 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             map:this.viewport.map,
             pressed:true,
             scale:'medium',
-            text:Ext.ux.ts.tr('Move Map'),
             toggleGroup:"tools",
-            tooltip:Ext.ux.ts.tr('Pan by dragging')
+            tooltip:Ext.ux.ts.tr('Move Map')
         }));
         actions.push(new GeoExt.Action({
             allowDepress:false,
@@ -62,7 +59,6 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             map:this.viewport.map,
             scale:'medium',
             scope:this,
-            text:Ext.ux.ts.tr('Zoom In'),
             toggleGroup:"tools",
             tooltip:Ext.ux.ts.tr('Zoom in')
         }));
@@ -76,7 +72,6 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             map: this.viewport.map,
             scale: 'medium',
             scope: this,
-            text: Ext.ux.ts.tr('Zoom Out'),
             toggleGroup: "tools",
             tooltip: Ext.ux.ts.tr('Zoom out')
         }));
@@ -88,7 +83,6 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             iconCls: "full-extent-button",
             scale:'medium',
             scope:this,
-            text:Ext.ux.ts.tr("Full Extent"),
             tooltip:Ext.ux.ts.tr('Zoom to full extent')
         }));
 
@@ -113,7 +107,6 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             toggleGroup: "tools",
             allowDepress: false,
             scale: 'medium',
-            text: Ext.ux.ts.tr('Identify'),
             tooltip: Ext.ux.ts.tr('Identify'),
             control: getFeatureInfo
         });
