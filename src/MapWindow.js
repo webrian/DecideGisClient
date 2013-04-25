@@ -186,9 +186,7 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
             control: ctrl.previous,
             disabled: true,
             scale: 'medium',
-            text: Ext.ux.ts.tr('Previous View'),
-            tooltip:  Ext.ux.ts.tr('Go to previous view'),
-            tooltipType: 'title'
+            tooltip:  Ext.ux.ts.tr('Go to previous view')
         });
         toolbarItems.push(navigationPreviousAction);
                 
@@ -198,9 +196,7 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
             control: ctrl.next,
             disabled: true,
             scale: 'medium',
-            text: Ext.ux.ts.tr('Next View'),
-            tooltip: Ext.ux.ts.tr('Go to next view'),
-            tooltipType: 'title'
+            tooltip: Ext.ux.ts.tr('Go to next view')
         });
         toolbarItems.push(navigationNextAction);
                 
@@ -210,9 +206,7 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
             iconAlign: 'top',
             iconCls: 'move-map-button',
             scale: 'medium',
-            text: Ext.ux.ts.tr('Move Map'),
             tooltip: Ext.ux.ts.tr('Move map by dragging'),
-            tooltipType: 'title',
             toggleGroup: "toolbarToggleGroup"
         });
         toolbarItems.push(panAction);
@@ -227,9 +221,8 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
             iconCls: 'zoom-in-button',
             map: this.map,
             scale: 'medium',
-            text: Ext.ux.ts.tr('Zoom In'),
             toggleGroup: "toolbarToggleGroup",
-            tooltip: Ext.ux.ts.tr('Zoom In'),
+            tooltip: Ext.ux.ts.tr('Zoom in'),
             tooltipType: 'title'
             
         });
@@ -257,8 +250,7 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
             iconCls: 'zoom-out-button',
             map: this.map,
             scale: 'medium',
-            text: Ext.ux.ts.tr('Zoom Out'),
-            tooltip: Ext.ux.ts.tr('Zoom Out'),
+            tooltip: Ext.ux.ts.tr('Zoom out'),
             tooltipType: 'title'
         });
         toolbarItems.push(zoomOutAction);
@@ -271,7 +263,6 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
             iconCls: 'full-extent-button',
             scale: 'medium',
             scope: this,
-            text: Ext.ux.ts.tr('Full Extent'),
             tooltip: Ext.ux.ts.tr('Zoom to full extent'),
             tooltipType: 'title'
         });
@@ -288,7 +279,6 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
             style: {
                 'margin-right': '10px'
             },
-            text: Ext.ux.ts.tr('Help'),
             tooltip: Ext.ux.ts.tr('Help'),
             xtype: 'button'
         });
@@ -384,7 +374,7 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
             root: {
                 expanded: true,
                 nodeType: 'async',
-                text: Ext.ux.ts.tr('Lao DECIDE Info MapViewer')
+                text: Ext.ux.ts.tr('Background layer')
             },
             tbar: [{
                 handler: function(button){

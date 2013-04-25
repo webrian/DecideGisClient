@@ -1030,7 +1030,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                 Ext.Msg.show({
                     buttons: Ext.Msg.OK,
                     icon: Ext.Msg.WARNING,
-                    msg: Ext.ux.ts.tr("Layer can not be shown."),
+                    msg: Ext.ux.ts.tr("Layer can not be loaded."),
                     title: Ext.ux.ts.tr("Error loading layer")
                 });
             },
