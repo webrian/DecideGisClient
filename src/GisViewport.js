@@ -298,7 +298,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                 dblclick: this.addLayerToStore,
                 scope: this
             },
-            // auto create TreeLoader
+            // Auto create TreeLoader
             loader: {
                 dataUrl: "/gis/layertree",
                 listeners: {
@@ -955,12 +955,17 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
             return null;
         }
 
+        // A store that holds all layer records
+        var featureStore;
+
         var layerTreeLoadingMask = new Ext.LoadMask(this.layerTreePanel.body, {
-            msg: Ext.ux.ts.tr("Loading...")
+            msg: Ext.ux.ts.tr("Loading..."),
+            store: featureStore
         });
         layerTreeLoadingMask.show();
         var layerGridLoadingMask = new Ext.LoadMask(this.layerGrid.body, {
-            msg: Ext.ux.ts.tr("Loading...")
+            msg: Ext.ux.ts.tr("Loading..."),
+            store: featureStore
         });
         layerGridLoadingMask.show();
 
@@ -1006,9 +1011,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
             });
         layer.id = node.attributes.id;
 
-        // A store that holds all layer records
-        var featureStore;
-
         // A store that holds the attributes
         var attributeStore = new Ext.data.JsonStore({
             autoLoad: false,
@@ -1020,6 +1022,18 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
         var layername = split[1];
 
         Ext.Ajax.request({
+            failure: function(r){
+                // Hide the loading masks
+                layerGridLoadingMask.hide();
+                layerTreeLoadingMask.hide();
+                // Show an error dialog
+                Ext.Msg.show({
+                    buttons: Ext.Msg.OK,
+                    icon: Ext.Msg.WARNING,
+                    msg: Ext.ux.ts.tr("Layer can not be shown."),
+                    title: Ext.ux.ts.tr("Error loading layer")
+                });
+            },
             method: 'GET',
             params: {
                 dataset: dataset,
@@ -1045,6 +1059,20 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                         format: 'ext'
                     },
                     fields: response.fields,
+                    listeners: {
+                        'exception': function(dataProxy, type, action, options, response) {
+                            // Hide the loading masks
+                            layerGridLoadingMask.hide();
+                            layerTreeLoadingMask.hide();
+                            // Show an error dialog
+                            Ext.Msg.show({
+                                buttons: Ext.Msg.OK,
+                                icon: Ext.Msg.WARNING,
+                                msg: Ext.ux.ts.tr("Layer can not be shown."),
+                                title: Ext.ux.ts.tr("Error loading layer")
+                            });
+                        }
+                    },
                     root: 'data',
                     proxy: new Ext.data.HttpProxy({
                         method: 'GET',
@@ -1054,7 +1082,12 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                 });
 
                 featureStore.load({
-                    callback: function(response){
+                    callback: function(records, options, success){
+
+                        // If load was not successful, return null
+                        if(!success) {
+                            return null;
+                        }
 
                         // Add the new layer and data store to the layerstore
                         var lr = new GeoExt.data.LayerRecord({

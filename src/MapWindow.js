@@ -181,8 +181,8 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
         this.map.addControl(ctrl);
                 
         var navigationPreviousAction = new GeoExt.Action({
-            icon: '/img/zoom-last.png',
             iconAlign: 'top',
+            iconCls: 'last-zoom-button',
             control: ctrl.previous,
             disabled: true,
             scale: 'medium',
@@ -193,8 +193,8 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
         toolbarItems.push(navigationPreviousAction);
                 
         var navigationNextAction = new GeoExt.Action({
-            icon: '/img/zoom-next.png',
             iconAlign: 'top',
+            iconCls: 'next-zoom-button',
             control: ctrl.next,
             disabled: true,
             scale: 'medium',
@@ -207,8 +207,8 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
         // Create the zoom out control and button
         var panAction = new Ext.Action({
             enableToggle: true,
-            icon: '/img/pan1.png',
             iconAlign: 'top',
+            iconCls: 'move-map-button',
             scale: 'medium',
             text: Ext.ux.ts.tr('Move Map'),
             tooltip: Ext.ux.ts.tr('Move map by dragging'),
@@ -223,8 +223,8 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
         var zoomBoxAction = new GeoExt.Action({
             control: zoomBox,
             enableToggle: true,
-            icon: '/img/zoom-in1.png',
             iconAlign: 'top',
+            iconCls: 'zoom-in-button',
             map: this.map,
             scale: 'medium',
             text: Ext.ux.ts.tr('Zoom In'),
@@ -253,8 +253,8 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
                 
         var zoomOutAction = new GeoExt.Action({
             control: zoomOutControl,
-            icon: '/img/zoom-out1.png',
             iconAlign: 'top',
+            iconCls: 'zoom-out-button',
             map: this.map,
             scale: 'medium',
             text: Ext.ux.ts.tr('Zoom Out'),
@@ -267,8 +267,8 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
             handler: function(){
                 this.map.zoomToExtent( fullExtent );
             },
-            icon: '/img/zoom-extent1.png',
             iconAlign: 'top',
+            iconCls: 'full-extent-button',
             scale: 'medium',
             scope: this,
             text: Ext.ux.ts.tr('Full Extent'),
@@ -282,8 +282,8 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
         }
 
         toolbarItems.push({
-            icon: '/img/help.png',
             iconAlign: 'top',
+            iconCls: 'help-button',
             scale: 'medium',
             style: {
                 'margin-right': '10px'
@@ -376,85 +376,7 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
             listeners: {
                 'click': {
                     fn: function(node, event) {
-
-                        // Loading Mask
-                        var loadingMask = new Ext.LoadMask(this.layersTreePanel.body, {
-                            msg: Ext.ux.ts.tr("Loading...")
-                        });
-                        loadingMask.show();
-
-                        if(node.layer && node.layer.id) {
-                            var id = node.layer.id;
-                            var l = (me.map.getLayersBy("id", id)[0]);
-                            var d = datasetCombo.getValue();
-                            // Basic request
-                            Ext.Ajax.request({
-                                failure: function(response){
-                                    loadingMask.hide();
-                                },
-                                method: 'GET',
-                                params: {
-                                    layer: id,
-                                    dataset: d
-                                },
-                                success: function(response){
-                                    var r = Ext.decode(response.responseText);
-
-                                    var t = new Ext.Template([
-                                        '<h1>{title}</h1>',
-                                        '<div>{text}</div>',
-                                        '<div style=\"margin-top: 5px;\"><img src="{src}" width="{width}" height="{height}"></div>',
-                                        '<div style=\"margin-top: 5px;\">' + Ext.ux.ts.tr("Data owner") + ':</div>',
-                                        '<img src=\"/img/{owner}-logo-large.png\" width=\"90\" height=\"90\" style=\"margin-top: 5px;\"/>'
-                                        ]);
-
-                                    // Legend container width
-                                    var lc_width = r.legend.width > 150 ? r.legend.width : 150
-
-                                    // Hide the loading mask before opening the
-                                    // legend window
-                                    loadingMask.hide();
-
-                                    if(this.legendWindow){
-                                        this.legendWindow.close();
-                                        delete this.legendWindow;
-                                    }
-
-                                    this.legendWindow = new Ext.Window({
-                                        autoScroll: true,
-                                        bbar: ['->', {
-                                            handler: function(){
-                                                this.legendWindow.close();
-                                                delete this.legendWindow;
-                                            },
-                                            scope: this,
-                                            text: Ext.ux.ts.tr("Close"),
-                                            xtype: 'button'
-                                        }],
-                                        bodyStyle: {
-                                            padding: '5px'
-                                        },
-                                        data: {
-                                            height: r.legend.height,
-                                            owner: datasetCombo.getValue(),
-                                            src: r.legend.src,
-                                            text: r.text,
-                                            title: node.layer.name,
-                                            width: r.legend.width
-                                        },
-                                        height: 300,
-                                        title: Ext.ux.ts.tr("Legend"),
-                                        tpl: t,
-                                        width: (lc_width + 40)
-                                    }).show();
-
-                                },
-                                scope: this,
-                                url: '/mapviewer/abstract'
-                            });
-                        } else {
-                            loadingMask.hide();
-                        }
+                        this.map.setBaseLayer(node.layer);
                     },
                     scope: this
                 }
@@ -463,10 +385,102 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
                 expanded: true,
                 nodeType: 'async',
                 text: Ext.ux.ts.tr('Lao DECIDE Info MapViewer')
-            }
+            },
+            tbar: [{
+                handler: function(button){
+                    var baseLayer = this.map.baseLayer;
+                    // Loading Mask
+                    var loadingMask = new Ext.LoadMask(this.layersTreePanel.body, {
+                        msg: Ext.ux.ts.tr("Loading...")
+                    });
+                    loadingMask.show();
+
+                    if(baseLayer && baseLayer.id) {
+                        var id = baseLayer.id;
+                        
+                        var d = datasetCombo.getValue();
+                        // Basic request
+                        Ext.Ajax.request({
+                            failure: function(response){
+                                loadingMask.hide();
+                            },
+                            method: 'GET',
+                            params: {
+                                layer: id,
+                                dataset: d
+                            },
+                            success: function(response){
+                                var r = Ext.decode(response.responseText);
+
+                                if(!r.legend || !r.text){
+                                    loadingMask.hide();
+                                    Ext.Msg.alert(Ext.ux.ts.tr("Not found"),
+                                        Ext.ux.ts.tr("Legend of current layer not found."));
+                                    return;
+                                }
+
+                                var t = new Ext.Template([
+                                    '<h1>{title}</h1>',
+                                    '<div>{text}</div>',
+                                    '<div style=\"margin-top: 5px;\"><img src="{src}" width="{width}" height="{height}"></div>',
+                                    '<div style=\"margin-top: 5px;\">' + Ext.ux.ts.tr("Data owner") + ':</div>',
+                                    '<img src=\"/img/{owner}-logo-large.png\" width=\"90\" height=\"90\" style=\"margin-top: 5px;\"/>'
+                                    ]);
+
+                                // Legend container width
+                                var lc_width = r.legend.width > 150 ? r.legend.width : 150
+
+                                // Hide the loading mask before opening the
+                                // legend window
+                                loadingMask.hide();
+
+                                if(this.legendWindow){
+                                    this.legendWindow.close();
+                                    delete this.legendWindow;
+                                }
+
+                                this.legendWindow = new Ext.Window({
+                                    autoScroll: true,
+                                    bbar: ['->', {
+                                        handler: function(){
+                                            this.legendWindow.close();
+                                            delete this.legendWindow;
+                                        },
+                                        scope: this,
+                                        text: Ext.ux.ts.tr("Close"),
+                                        xtype: 'button'
+                                    }],
+                                    bodyStyle: {
+                                        padding: '5px'
+                                    },
+                                    data: {
+                                        height: r.legend.height,
+                                        owner: datasetCombo.getValue(),
+                                        src: r.legend.src,
+                                        text: r.text,
+                                        title: baseLayer.name,
+                                        width: r.legend.width
+                                    },
+                                    height: 300,
+                                    title: Ext.ux.ts.tr("Legend"),
+                                    tpl: t,
+                                    width: (lc_width + 40)
+                                }).show();
+
+                            },
+                            scope: this,
+                            url: '/mapviewer/abstract'
+                        });
+                    } else {
+                        loadingMask.hide();
+                    }
+                },
+                iconAlign: 'left',
+                iconCls: 'show-legend-button',
+                scope: this,
+                text: 'Show legend'
+            }]
         });
-
-
 
         var tbar = new Ext.Toolbar({
             enableOverflow: true,
