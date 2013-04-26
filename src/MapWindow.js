@@ -404,17 +404,6 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
                                     return;
                                 }
 
-                                var t = new Ext.Template([
-                                    '<h1>{title}</h1>',
-                                    '<div>{text}</div>',
-                                    '<div style=\"margin-top: 5px;\"><img src="{src}" width="{width}" height="{height}"></div>',
-                                    '<div style=\"margin-top: 5px;\">' + Ext.ux.ts.tr("Data owner") + ':</div>',
-                                    '<img src=\"/img/{owner}-logo-large.png\" width=\"90\" height=\"90\" style=\"margin-top: 5px;\"/>'
-                                    ]);
-
-                                // Legend container width
-                                var lc_width = r.legend.width > 150 ? r.legend.width : 150
-
                                 // Hide the loading mask before opening the
                                 // legend window
                                 loadingMask.hide();
@@ -424,32 +413,10 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
                                     delete this.legendWindow;
                                 }
 
-                                this.legendWindow = new Ext.Window({
-                                    autoScroll: true,
-                                    bbar: ['->', {
-                                        handler: function(){
-                                            this.legendWindow.close();
-                                            delete this.legendWindow;
-                                        },
-                                        scope: this,
-                                        text: Ext.ux.ts.tr("Close"),
-                                        xtype: 'button'
-                                    }],
-                                    bodyStyle: {
-                                        padding: '5px'
-                                    },
-                                    data: {
-                                        height: r.legend.height,
-                                        owner: datasetCombo.getValue(),
-                                        src: r.legend.src,
-                                        text: r.text,
-                                        title: baseLayer.name,
-                                        width: r.legend.width
-                                    },
-                                    height: 300,
-                                    title: Ext.ux.ts.tr("Legend"),
-                                    tpl: t,
-                                    width: (lc_width + 40)
+                                this.legendWindow = new Ext.ux.LegendWindow({
+                                    attribution: baseLayer.attribution ? baseLayer.attribution : "",
+                                    options: r,
+                                    title: baseLayer.name
                                 }).show();
 
                             },
@@ -463,7 +430,7 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
                 iconAlign: 'left',
                 iconCls: 'show-legend-button',
                 scope: this,
-                text: 'Show legend'
+                text: Ext.ux.ts.tr('Show legend')
             }]
         });
 

@@ -421,7 +421,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                     scope: this
                 },{
                     icon: '/img/legend-16.png',
-                    tooltip: Ext.ux.ts.tr("Show Legend"),
+                    tooltip: Ext.ux.ts.tr("Show legend"),
                     handler: function(grid, rowIndex, colIndex){
 
                         var loadingMask = new Ext.LoadMask(this.layerGrid.body, {
@@ -438,6 +438,9 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                         var ln = split[1];
 
                         Ext.Ajax.request({
+                            failure: function(response){
+                                loadingMask.hide();
+                            },
                             method: 'GET',
                             params: {
                                 layer: ln,
@@ -446,64 +449,16 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                             success: function(response){
                                 var r = Ext.decode(response.responseText);
 
-                                var t = new Ext.Template([
-                                    '<img src="{src}" width="{width}" height="{height}">'
-                                    ]);
-
-                                // Legend container width
-                                var lc_height = r.legend.height > 150 ? r.legend.height : 150;
-                                var lc_width = r.legend.width > 150 ? r.legend.width : 150
-
-                                // The legend window
-                                var w = new Ext.Window({
-                                    autoScroll: true,
-                                    // Add a bottom bar with a close button
-                                    bbar: ['->',{
-                                        handler: function(button){
-                                            w.close();
-                                        },
-                                        text: Ext.ux.ts.tr("Close")
-                                    }],
-                                    
-                                    layout: 'border',
-                                    height: (lc_height + 130),
-                                    items: [{
-                                        autoScroll: true,
-                                        // Add some margin to the inner body style
-                                        style: {
-                                            padding: '5px'
-                                        },
-                                        items:[{
-                                            html: r.text,
-                                            width: 220,
-                                            xtype: 'container'
-                                        },{
-                                            data: r.legend,
-                                            height: lc_height,
-                                            width: lc_width,
-                                            tpl: t,
-                                            xtype: 'container'
-                                        }],
-                                        layout: 'hbox',
-                                        region: 'center',
-                                        xtype: 'container'
-                                    },{
-                                        html: rec.data.layer.attribution,
-                                        region: 'south',
-                                        // Add some padding to the style
-                                        style: {
-                                            padding: '5px'
-                                        },
-                                        xtype: 'container'
-                                    }],
-                                    title: rec.data.title,
-                                    width: (lc_width + 250)
+                                // Show the legend window
+                                var w = new Ext.ux.LegendWindow({
+                                    attribution: rec.data.layer.attribution ? rec.data.layer.attribution : "",
+                                    options: r,
+                                    title: rec.data.layer.name
                                 }).show();
 
                                 // Hide the loading mask after opening the
                                 // legend window
                                 loadingMask.hide();
-
                             },
                             url: '/gis/abstract'
                         });
