@@ -244,8 +244,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                     no_geom: 'false'
                 });
                 var url = "/" + Ext.ux.currentLanguage + "/gis/layer?" + Ext.urlEncode(p);
-                console.log(url);
-            //window.location.href = url;
+                window.location.href = url;
             },
             iconCls: "download-button",
             iconAlign: 'top',
