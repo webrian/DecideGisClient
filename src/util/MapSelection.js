@@ -95,7 +95,6 @@ Ext.ux.MapSelection = Ext.extend(Ext.util.Observable, {
             "selection",
             Ext.ux.GeoServerUrl + "/wms",
             {
-                dataset: 'census2005',
                 sld_body: sld_body,
                 transparent: true,
                 format: "image/png",

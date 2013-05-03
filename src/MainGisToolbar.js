@@ -269,6 +269,10 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
     },
 
     selectFeaturesByBox:function(event){
+
+        // Clear first an existing selection
+        this.unselectFeatures(event);
+
         var bbox=event.response;
         if(bbox instanceof OpenLayers.Bounds){
             this.viewport.selectionBounds=bbox.clone();
@@ -314,6 +318,9 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
 
 
     selectFeaturesFreehand:function(event){
+
+        // Clear first an existing selection
+        this.unselectFeatures(event);
 
         var f=event.feature;
         if(f.geometry instanceof OpenLayers.Geometry){
