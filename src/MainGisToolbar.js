@@ -162,7 +162,10 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                 if(!selected){
                     return null;
                 }
-                var s = selected.data.featureStore
+                var s = selected.data.featureStore;
+                // Load the feature store in the moment the attribute table is
+                // opened.
+                s.load();
 
                 // Create the columns from the featureStore
                 var columns = new Array();
@@ -378,7 +381,8 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
             if(record.data.layer.name == 'selection'){
                 this.remove(record);
             }
-            // Restore all layer's featureStores
+            // Restore all layer's featureStores, but do not reload the featureStore.
+            // The featureStore is reloaded when the attribute table is opened.
             if(record.data.featureStore){
                 var store = record.data.featureStore;
                 var params = store.baseParams;
@@ -390,7 +394,6 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                     layer: params.layer,
                     limit: params.limit
                 };
-                store.load();
             }
         }, layerStore);
         // Refilter the layerstore

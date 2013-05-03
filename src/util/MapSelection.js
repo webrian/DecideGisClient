@@ -84,12 +84,6 @@ Ext.ux.MapSelection = Ext.extend(Ext.util.Observable, {
         var sld_format = new OpenLayers.Format.SLD();
         var sld_body = sld_format.write(style);
 
-        // Remove first the existing selection
-        /*if(this.layer) {
-            this.map.removeLayer(this.layer);
-            this.layer = null;
-        }*/
-
         // Create a new layer
         var layer = new OpenLayers.Layer.WMS(
             "selection",

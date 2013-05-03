@@ -118,12 +118,6 @@ Ext.ux.data.SelectionStore = Ext.extend(Ext.data.JsonStore, {
 
         Ext.apply(this.baseParams, additionalParams);
 
-        this.load({
-            scope: this
-        });
-
-    // Enable the download action
-    //this.downloadAction.enable();
     },
 
     /**
@@ -149,16 +143,14 @@ Ext.ux.data.SelectionStore = Ext.extend(Ext.data.JsonStore, {
 
         Ext.apply(this.baseParams, additionalParams);
 
-        this.load();
-        
-        // Enable the download action
-        //this.downloadAction.enable();
     },
 
     /**
+     * @deprecated
      * Unselect all features from the store.
      */
     unselect: function() {
+        console.warn("@deprecated");
         this.removeAll(false);
         // Disable the download action
         this.downloadAction.disable();
