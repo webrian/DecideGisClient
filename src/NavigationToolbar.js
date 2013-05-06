@@ -115,8 +115,9 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
         actions.push('->');
         var villageSearchStore=new Ext.data.JsonStore({
             url:'/gis/search',
-            idProperty:'osm_id',
-            fields:['osm_id', 'display_name','class','lon','lat']
+            idProperty:'fid',
+            root: 'data',
+            fields:['fid', 'display_name','class','lon','lat']
         });
         actions.push(new Ext.form.Label({
             style:{
@@ -126,18 +127,18 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             text: Ext.ux.ts.tr('Zoom to village') + ":"
         }));
         actions.push(new Ext.form.ComboBox({
-            store:villageSearchStore,
+            store: villageSearchStore,
             displayField: 'display_name',
-            typeAhead:true,
-            mode:'remote',
-            queryParam:'q',
-            hideTrigger:true,
-            selectOnFocus:true,
-            width:250,
+            typeAhead: false,
+            mode: 'remote',
+            queryParam: 'q',
+            hideTrigger: true,
+            selectOnFocus: true,
+            width: 250,
             listeners:{
                 'select':function(combo,record,index){
-                    var lonLat=new OpenLayers.LonLat(record.data.lon,record.data.lat);
-                    this.viewport.map.setCenter(lonLat,6);
+                    var lonLat = new OpenLayers.LonLat(record.data.lon,record.data.lat);
+                    this.viewport.map.setCenter(lonLat, 6);
                 },
                 scope:this
             }
@@ -243,6 +244,9 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
                     identifyWindow.close();
                     identifyWindow = null;
                 },
+                iconCls: 'quit-button',
+                iconAlign: 'top',
+                scale: 'medium',
                 text: Ext.ux.ts.tr("Close"),
                 xtype: 'button'
             }],

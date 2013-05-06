@@ -27,6 +27,9 @@ Buttons in the main toolbar
 .zoom-selection-button {
     background-image: url(img/zoom-selection.png) !important;
 }
+.download-table-button {
+    background-image: url(img/download_table.png) !important;
+}
 /*
 GIS navigation buttons
 */
