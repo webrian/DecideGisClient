@@ -76,7 +76,7 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
          * </script>
          */
         var baselayer = new OpenLayers.Layer.TMS(
-            "Base Layer", Ext.ux.baseLayerUrl, {
+            Ext.ux.ts.tr("Background layer"), Ext.ux.baseLayerUrl, {
                 isBaseLayer: true,
                 displayInLayerSwitcher: false,
                 layername: Ext.ux.baseLayerName,
