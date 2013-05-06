@@ -118,13 +118,16 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                         this.unselectFeatures();
                         attributeSelectionPanel.selectFeaturesByAttributes(attributeSelectionPanel.logicalOperator, attributeSelectionPanel.findByType("ux_attributeselectionfield"));
                     },
+                    iconCls: 'select-button',
+                    iconAlign: 'top',
                     scope: this,
+                    scale: 'medium',
                     text: Ext.ux.ts.tr('Select')
                 });
 
                 attributeSelectionPanel = new Ext.ux.AttributeSelectionPanel({
                     border: false,
-                    //frame: false,
+                    frame: false,
                     layerRecord: selected,
                     selectButton: selectButton,
                     viewport: this.viewport
@@ -136,6 +139,9 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                         handler: function(){
                             w.close();
                         },
+                        iconCls: 'quit-button',
+                        iconAlign: 'top',
+                        scale: 'medium',
                         text: Ext.ux.ts.tr('Close'),
                         xtype: 'button'
                     }, selectButton],
@@ -162,7 +168,10 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                 if(!selected){
                     return null;
                 }
-                var s = selected.data.featureStore
+                var s = selected.data.featureStore;
+                // Load the feature store in the moment the attribute table is
+                // opened.
+                s.load();
 
                 // Create the columns from the featureStore
                 var columns = new Array();
@@ -178,6 +187,9 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                         handler: function(button, event){
                             w.close();
                         },
+                        iconCls: 'quit-button',
+                        iconAlign: 'top',
+                        scale: 'medium',
                         text: Ext.ux.ts.tr("Close"),
                         xtype: 'button'
                     }],
@@ -205,6 +217,12 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                     layout: 'fit',
                     tbar: [{
                         handler: function(){
+
+                            var loadingMask = new Ext.LoadMask(w.body, {
+                                msg: Ext.ux.ts.tr("Loading...")
+                            });
+                            loadingMask.show();
+
                             // Clone the base parameters
                             var p = Ext.apply({}, s.baseParams);
                             // Remove the limit and offset parameter
@@ -213,10 +231,25 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                             Ext.apply(p, {
                                 format: 'xls'
                             });
-                            var url = "/" + Ext.ux.currentLanguage + "/gis/layer?" + Ext.urlEncode(p);
-                            window.location.href = url;
+                            Ext.Ajax.request({
+                                callback: function(options, success, response){
+                                    loadingMask.hide();
+                                },
+                                failure: function(response, options){
+                                    Ext.Msg.alert("Error", response.responseText);
+                                },
+                                method: 'GET',
+                                params: p,
+                                success: function(response, options){
+                                    var r = Ext.decode(response.responseText);
+                                    if(r.success){
+                                        window.location.href = r.msg;
+                                    }
+                                },
+                                url: "/" + Ext.ux.currentLanguage + "/gis/layer"
+                            });
                         },
-                        icon: '/img/download_table.png',
+                        iconCls: 'download-table-button',
                         iconAlign: 'top',
                         text: Ext.ux.ts.tr("Save as Table"),
                         scale: 'medium',
@@ -234,18 +267,41 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
         },{
             handler: function(){
                 var selected = this.viewport.layerGrid.getSelectedLayer();
+                if(!selected){
+                    return null;
+                }
                 // Clone the base parameters
                 var p = Ext.apply({}, selected.data.featureStore.baseParams);
                 // Remove the limit and offset parameter
                 delete p['limit'];
                 delete p['offset'];
+
+                var loadingMask = new Ext.LoadMask(this.viewport.body, {
+                    msg: Ext.ux.ts.tr("Loading...")
+                });
+                loadingMask.show();
+
                 Ext.apply(p, {
                     format: 'shp',
                     no_geom: 'false'
                 });
-                var url = "/" + Ext.ux.currentLanguage + "/gis/layer?" + Ext.urlEncode(p);
-                console.log(url);
-            //window.location.href = url;
+                Ext.Ajax.request({
+                    callback: function(options, success, response){
+                        loadingMask.hide();
+                    },
+                    failure: function(response, options){
+                        Ext.Msg.alert("Error", response.responseText);
+                    },
+                    method: 'GET',
+                    params: p,
+                    success: function(response, options){
+                        var r = Ext.decode(response.responseText);
+                        if(r.success){
+                            window.location.href = r.msg;
+                        }
+                    },
+                    url: "/" + Ext.ux.currentLanguage + "/gis/layer"
+                });
             },
             iconCls: "download-button",
             iconAlign: 'top',
@@ -270,6 +326,10 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
     },
 
     selectFeaturesByBox:function(event){
+
+        // Clear first an existing selection
+        this.unselectFeatures(event);
+
         var bbox=event.response;
         if(bbox instanceof OpenLayers.Bounds){
             this.viewport.selectionBounds=bbox.clone();
@@ -315,6 +375,9 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
 
 
     selectFeaturesFreehand:function(event){
+
+        // Clear first an existing selection
+        this.unselectFeatures(event);
 
         var f=event.feature;
         if(f.geometry instanceof OpenLayers.Geometry){
@@ -372,7 +435,8 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
             if(record.data.layer.name == 'selection'){
                 this.remove(record);
             }
-            // Restore all layer's featureStores
+            // Restore all layer's featureStores, but do not reload the featureStore.
+            // The featureStore is reloaded when the attribute table is opened.
             if(record.data.featureStore){
                 var store = record.data.featureStore;
                 var params = store.baseParams;
@@ -384,7 +448,6 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                     layer: params.layer,
                     limit: params.limit
                 };
-                store.load();
             }
         }, layerStore);
         // Refilter the layerstore

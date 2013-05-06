@@ -265,6 +265,10 @@ Ext.ux.AttributeSelectionField = Ext.extend(Ext.form.CompositeField, {
                     }
                 },
                 scope: this
+            },
+            style: {
+                'padding-left': '5px',
+                'padding-right': '5px'
             }
         }
 

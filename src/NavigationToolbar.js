@@ -27,7 +27,6 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             disabled:true,
             iconAlign: 'top',
             iconCls: 'last-zoom-button',
-            text:Ext.ux.ts.tr("Previous View"),
             tooltip:Ext.ux.ts.tr('Go to previous view'),
             scale:'medium'
         }));
@@ -37,8 +36,7 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             iconAlign:'top',
             iconCls:'next-zoom-button',
             scale:'medium',
-            text:Ext.ux.ts.tr("Next View"),
-            tooltip:Ext.ux.ts.tr("Go to next view")
+            tooltip:Ext.ux.ts.tr('Go to next view')
         }));
         actions.push(new GeoExt.Action({
             allowDepress:false,
@@ -48,9 +46,8 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             map:this.viewport.map,
             pressed:true,
             scale:'medium',
-            text:Ext.ux.ts.tr('Move Map'),
             toggleGroup:"tools",
-            tooltip:Ext.ux.ts.tr('Pan by dragging')
+            tooltip:Ext.ux.ts.tr('Move Map')
         }));
         actions.push(new GeoExt.Action({
             allowDepress:false,
@@ -62,7 +59,6 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             map:this.viewport.map,
             scale:'medium',
             scope:this,
-            text:Ext.ux.ts.tr('Zoom In'),
             toggleGroup:"tools",
             tooltip:Ext.ux.ts.tr('Zoom in')
         }));
@@ -76,7 +72,6 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             map: this.viewport.map,
             scale: 'medium',
             scope: this,
-            text: Ext.ux.ts.tr('Zoom Out'),
             toggleGroup: "tools",
             tooltip: Ext.ux.ts.tr('Zoom out')
         }));
@@ -88,7 +83,6 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             iconCls: "full-extent-button",
             scale:'medium',
             scope:this,
-            text:Ext.ux.ts.tr("Full Extent"),
             tooltip:Ext.ux.ts.tr('Zoom to full extent')
         }));
 
@@ -113,7 +107,6 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             toggleGroup: "tools",
             allowDepress: false,
             scale: 'medium',
-            text: Ext.ux.ts.tr('Identify'),
             tooltip: Ext.ux.ts.tr('Identify'),
             control: getFeatureInfo
         });
@@ -122,8 +115,9 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
         actions.push('->');
         var villageSearchStore=new Ext.data.JsonStore({
             url:'/gis/search',
-            idProperty:'osm_id',
-            fields:['osm_id', 'display_name','class','lon','lat']
+            idProperty:'fid',
+            root: 'data',
+            fields:['fid', 'display_name','class','lon','lat']
         });
         actions.push(new Ext.form.Label({
             style:{
@@ -133,18 +127,18 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             text: Ext.ux.ts.tr('Zoom to village') + ":"
         }));
         actions.push(new Ext.form.ComboBox({
-            store:villageSearchStore,
+            store: villageSearchStore,
             displayField: 'display_name',
-            typeAhead:true,
-            mode:'remote',
-            queryParam:'q',
-            hideTrigger:true,
-            selectOnFocus:true,
-            width:250,
+            typeAhead: false,
+            mode: 'remote',
+            queryParam: 'q',
+            hideTrigger: true,
+            selectOnFocus: true,
+            width: 250,
             listeners:{
                 'select':function(combo,record,index){
-                    var lonLat=new OpenLayers.LonLat(record.data.lon,record.data.lat);
-                    this.viewport.map.setCenter(lonLat,6);
+                    var lonLat = new OpenLayers.LonLat(record.data.lon,record.data.lat);
+                    this.viewport.map.setCenter(lonLat, 6);
                 },
                 scope:this
             }
@@ -250,6 +244,9 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
                     identifyWindow.close();
                     identifyWindow = null;
                 },
+                iconCls: 'quit-button',
+                iconAlign: 'top',
+                scale: 'medium',
                 text: Ext.ux.ts.tr("Close"),
                 xtype: 'button'
             }],

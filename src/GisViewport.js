@@ -298,7 +298,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                 dblclick: this.addLayerToStore,
                 scope: this
             },
-            // auto create TreeLoader
+            // Auto create TreeLoader
             loader: {
                 dataUrl: "/gis/layertree",
                 listeners: {
@@ -421,7 +421,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                     scope: this
                 },{
                     icon: '/img/legend-16.png',
-                    tooltip: Ext.ux.ts.tr("Show Legend"),
+                    tooltip: Ext.ux.ts.tr("Show legend"),
                     handler: function(grid, rowIndex, colIndex){
 
                         var loadingMask = new Ext.LoadMask(this.layerGrid.body, {
@@ -438,6 +438,9 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                         var ln = split[1];
 
                         Ext.Ajax.request({
+                            failure: function(response){
+                                loadingMask.hide();
+                            },
                             method: 'GET',
                             params: {
                                 layer: ln,
@@ -446,64 +449,16 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                             success: function(response){
                                 var r = Ext.decode(response.responseText);
 
-                                var t = new Ext.Template([
-                                    '<img src="{src}" width="{width}" height="{height}">'
-                                    ]);
-
-                                // Legend container width
-                                var lc_height = r.legend.height > 150 ? r.legend.height : 150;
-                                var lc_width = r.legend.width > 150 ? r.legend.width : 150
-
-                                // The legend window
-                                var w = new Ext.Window({
-                                    autoScroll: true,
-                                    // Add a bottom bar with a close button
-                                    bbar: ['->',{
-                                        handler: function(button){
-                                            w.close();
-                                        },
-                                        text: Ext.ux.ts.tr("Close")
-                                    }],
-                                    
-                                    layout: 'border',
-                                    height: (lc_height + 130),
-                                    items: [{
-                                        autoScroll: true,
-                                        // Add some margin to the inner body style
-                                        style: {
-                                            padding: '5px'
-                                        },
-                                        items:[{
-                                            html: r.text,
-                                            width: 220,
-                                            xtype: 'container'
-                                        },{
-                                            data: r.legend,
-                                            height: lc_height,
-                                            width: lc_width,
-                                            tpl: t,
-                                            xtype: 'container'
-                                        }],
-                                        layout: 'hbox',
-                                        region: 'center',
-                                        xtype: 'container'
-                                    },{
-                                        html: rec.data.layer.attribution,
-                                        region: 'south',
-                                        // Add some padding to the style
-                                        style: {
-                                            padding: '5px'
-                                        },
-                                        xtype: 'container'
-                                    }],
-                                    title: rec.data.title,
-                                    width: (lc_width + 250)
+                                // Show the legend window
+                                var w = new Ext.ux.LegendWindow({
+                                    attribution: rec.data.layer.attribution ? rec.data.layer.attribution : "",
+                                    options: r,
+                                    title: rec.data.layer.name
                                 }).show();
 
                                 // Hide the loading mask after opening the
                                 // legend window
                                 loadingMask.hide();
-
                             },
                             url: '/gis/abstract'
                         });
@@ -955,12 +910,17 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
             return null;
         }
 
+        // A store that holds all layer records
+        var featureStore;
+
         var layerTreeLoadingMask = new Ext.LoadMask(this.layerTreePanel.body, {
-            msg: Ext.ux.ts.tr("Loading...")
+            msg: Ext.ux.ts.tr("Loading..."),
+            store: featureStore
         });
         layerTreeLoadingMask.show();
         var layerGridLoadingMask = new Ext.LoadMask(this.layerGrid.body, {
-            msg: Ext.ux.ts.tr("Loading...")
+            msg: Ext.ux.ts.tr("Loading..."),
+            store: featureStore
         });
         layerGridLoadingMask.show();
 
@@ -1006,9 +966,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
             });
         layer.id = node.attributes.id;
 
-        // A store that holds all layer records
-        var featureStore;
-
         // A store that holds the attributes
         var attributeStore = new Ext.data.JsonStore({
             autoLoad: false,
@@ -1020,6 +977,18 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
         var layername = split[1];
 
         Ext.Ajax.request({
+            failure: function(r){
+                // Hide the loading masks
+                layerGridLoadingMask.hide();
+                layerTreeLoadingMask.hide();
+                // Show an error dialog
+                Ext.Msg.show({
+                    buttons: Ext.Msg.OK,
+                    icon: Ext.Msg.WARNING,
+                    msg: Ext.ux.ts.tr("Layer cannot be loaded."),
+                    title: Ext.ux.ts.tr("Error loading layer")
+                });
+            },
             method: 'GET',
             params: {
                 dataset: dataset,
@@ -1045,6 +1014,20 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                         format: 'ext'
                     },
                     fields: response.fields,
+                    listeners: {
+                        'exception': function(dataProxy, type, action, options, response) {
+                            // Hide the loading masks
+                            layerGridLoadingMask.hide();
+                            layerTreeLoadingMask.hide();
+                            // Show an error dialog
+                            Ext.Msg.show({
+                                buttons: Ext.Msg.OK,
+                                icon: Ext.Msg.WARNING,
+                                msg: Ext.ux.ts.tr("Layer cannot be loaded."),
+                                title: Ext.ux.ts.tr("Error loading layer")
+                            });
+                        }
+                    },
                     root: 'data',
                     proxy: new Ext.data.HttpProxy({
                         method: 'GET',
@@ -1054,7 +1037,12 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                 });
 
                 featureStore.load({
-                    callback: function(response){
+                    callback: function(records, options, success){
+
+                        // If load was not successful, return null
+                        if(!success) {
+                            return null;
+                        }
 
                         // Add the new layer and data store to the layerstore
                         var lr = new GeoExt.data.LayerRecord({
