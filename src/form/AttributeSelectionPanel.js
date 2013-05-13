@@ -68,10 +68,11 @@ Ext.ux.AttributeSelectionPanel = Ext.extend(Ext.form.FormPanel, {
             hideLabel: true,
             hideLabels: true,
             labelWidth: 0,
-            frame: true,
-            items: [
-            {
+            items: [{
                 xtype: "compositefield",
+                style: {
+                    padding: '5px'
+                },
                 items: [
                 {
                     xtype: 'label',
