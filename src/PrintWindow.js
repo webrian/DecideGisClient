@@ -152,7 +152,7 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
             iconCls: 'quit-button',
             scale: 'medium',
             scope: this,
-            text: Ext.ux.ts.tr("Quit"),
+            text: Ext.ux.ts.tr("Close"),
             width: 50
         });
 
@@ -267,7 +267,7 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
                 scale: 'medium',
                 scope: this,
 
-                text: Ext.ux.ts.tr("Remove frame"),
+                text: Ext.ux.ts.tr("Remove map frame"),
                 xtype: 'button'
             }],
             padding: '5px',

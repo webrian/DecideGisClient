@@ -109,7 +109,7 @@ Ext.ux.AttributeSelectionPanel = Ext.extend(Ext.form.FormPanel, {
                     }
                 },{
                     xtype: 'label',
-                    text: Ext.ux.ts.tr(' of the following:')
+                    text: Ext.ux.ts.tr('of the following:')
                 }]
             },
             {
