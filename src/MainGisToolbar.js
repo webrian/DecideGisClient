@@ -218,7 +218,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                     tbar: [{
                         handler: function(){
 
-                            var loadingMask = new Ext.LoadMask(w.body, {
+                            var loadingMask = new Ext.LoadMask(document.body, {
                                 msg: Ext.ux.ts.tr("Loading...")
                             });
                             loadingMask.show();
@@ -276,7 +276,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                 delete p['limit'];
                 delete p['offset'];
 
-                var loadingMask = new Ext.LoadMask(this.viewport.body, {
+                var loadingMask = new Ext.LoadMask(document.body, {
                     msg: Ext.ux.ts.tr("Loading...")
                 });
                 loadingMask.show();
