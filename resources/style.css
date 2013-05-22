@@ -82,6 +82,17 @@ img.olImageLoadError {
     font-family: Arial,Verdana,sans-serif  ! important;
     font-size: 11px  ! important;
 }
+
+.download-image-button {
+    background-image: url(img/download_image.png) !important;
+}
+
+.histogram {
+    background-image: url(img/histogram.png) !important;
+    height:16px !important;
+    width:16px !important;
+}
+
 /** Small icons in the layer tree and list to indicate geometry type **/
 div.POINT img.x-tree-node-icon {
     background-image: url(img/point-16.png) !important;
