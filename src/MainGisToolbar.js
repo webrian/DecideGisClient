@@ -169,6 +169,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                     return null;
                 }
                 var s = selected.data.featureStore;
+                var attributeStore = selected.data.attributeStore;
                 // Load the feature store in the moment the attribute table is
                 // opened.
                 s.load();
@@ -176,11 +177,165 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                 // Create the columns from the featureStore
                 var columns = new Array();
                 for(var i = 0; i < s.fields.keys.length; i++){
+                    var attributeIndex = attributeStore.find("name", s.fields.keys[i]);
+                    var header = attributeStore.getAt(attributeIndex).get("label");
+
                     columns.push({
-                        'header': s.fields.keys[i],
-                        'dataIndex': s.fields.keys[i]
-                    })
+                        dataIndex: s.fields.keys[i],
+                        header: header,
+                        sortable: true
+                    });
                 }
+
+                var gridView = new Ext.grid.GridView({
+                    afterRenderUI: function() {
+
+                        var grid = this.grid;
+
+                        this.initElements();
+
+                        // get mousedowns early
+                        Ext.fly(this.innerHd).on('click', this.handleHdDown, this);
+
+                        this.mainHd.on({
+                            scope    : this,
+                            mouseover: this.handleHdOver,
+                            mouseout : this.handleHdOut,
+                            mousemove: this.handleHdMove
+                        });
+
+                        this.scroller.on('scroll', this.syncScroll,  this);
+
+                        if (grid.enableColumnResize !== false) {
+                            this.splitZone = new Ext.grid.GridView.SplitDragZone(grid, this.mainHd.dom);
+                        }
+
+                        if (grid.enableColumnMove) {
+                            this.columnDrag = new Ext.grid.GridView.ColumnDragZone(grid, this.innerHd);
+                            this.columnDrop = new Ext.grid.HeaderDropZone(grid, this.mainHd.dom);
+                        }
+
+                        if (grid.enableHdMenu !== false) {
+                            this.hmenu = new Ext.menu.Menu({
+                                id: grid.id + '-hctx'
+                            });
+                            this.hmenu.add({
+                                iconCls: 'histogram',
+                                itemId: 'hist',
+                                text: this.histogramText
+                            },{
+                                itemId:'asc',
+                                text: this.sortAscText,
+                                cls: 'xg-hmenu-sort-asc'
+                            },{
+                                itemId:'desc',
+                                text: this.sortDescText,
+                                cls: 'xg-hmenu-sort-desc'
+                            }
+                            );
+
+                            if (grid.enableColumnHide !== false) {
+                                this.colMenu = new Ext.menu.Menu({
+                                    id:grid.id + '-hcols-menu'
+                                });
+                                this.colMenu.on({
+                                    scope     : this,
+                                    beforeshow: this.beforeColMenuShow,
+                                    itemclick : this.handleHdMenuClick
+                                });
+                                this.hmenu.add('-', {
+                                    itemId:'columns',
+                                    hideOnClick: false,
+                                    text: this.columnsText,
+                                    menu: this.colMenu,
+                                    iconCls: 'x-cols-icon'
+                                });
+                            }
+
+                            this.hmenu.on('itemclick', this.handleHdMenuClick, this);
+                        }
+
+                        if (grid.trackMouseOver) {
+                            this.mainBody.on({
+                                scope    : this,
+                                mouseover: this.onRowOver,
+                                mouseout : this.onRowOut
+                            });
+                        }
+
+                        if (grid.enableDragDrop || grid.enableDrag) {
+                            this.dragZone = new Ext.grid.GridDragZone(grid, {
+                                ddGroup : grid.ddGroup || 'GridDD'
+                            });
+                        }
+
+                        this.updateHeaderSortState();
+                    },
+                    forceFit: true,
+                    handleHdMenuClick : function(item) {
+                        var store = this.ds,
+                        dataIndex = this.cm.getDataIndex(this.hdCtxIndex);
+
+                        switch (item.getItemId()) {
+                            case 'asc':
+                                store.sort(dataIndex, 'ASC');
+                                break;
+                            case 'desc':
+                                store.sort(dataIndex, 'DESC');
+                                break;
+                            case 'hist':
+                                // Clone the base parameters
+                                var p = Ext.apply({}, s.baseParams);
+                                // Remove the limit and offset parameter
+                                delete p['limit'];
+                                delete p['offset'];
+                                Ext.apply(p, {
+                                    format: 'hist',
+                                    attrs: dataIndex,
+                                    height: 264,
+                                    width: 586
+                                });
+                                var url = "/" + Ext.ux.currentLanguage + "/gis/layer?" + Ext.urlEncode(p);
+                                var histWindow = new Ext.Window({
+                                    bbar: ['->',{
+                                        handler: function(button, event){
+                                            histWindow.close();
+                                        },
+                                        iconCls: 'quit-button',
+                                        iconAlign: 'top',
+                                        scale: 'medium',
+                                        text: Ext.ux.ts.tr("Close"),
+                                        xtype: 'button'
+                                    }],
+                                    bodyCfg: {
+                                        children: [{
+                                            tag: 'img',
+                                            src: url,
+                                            alt: "Histogram"
+                                        }],
+                                        tag: 'div'
+                                    },
+                                    height: 400,
+                                    tbar: [{
+                                        handler: function(button, event){
+                                            window.location.href = url;
+                                        },
+                                        iconAlign: 'top',
+                                        iconCls: 'download-image-button',
+                                        scale: 'medium',
+                                        text: Ext.ux.ts.tr("Save as Image"),
+                                        xtype: 'button'
+                                    }],
+                                    width: 600
+                                }).show();
+                                break;
+                            default:
+                                this.handleHdMenuClickDefault(item);
+                        }
+                        return true;
+                    },
+                    histogramText: Ext.ux.ts.tr("Show histogram")
+                });
 
                 var w = new Ext.Window({
                     bbar: ['->',{
@@ -208,10 +363,9 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                         border: false,
                         columns: columns,
                         frame: false,
+                        loadMask: true,
                         store: s,
-                        viewConfig: {
-                            forceFit: true
-                        },
+                        view: gridView,
                         xtype: 'grid'
                     }],
                     layout: 'fit',

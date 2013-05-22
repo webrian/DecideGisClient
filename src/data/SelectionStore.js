@@ -39,12 +39,8 @@ Ext.ux.data.SelectionStore = Ext.extend(Ext.data.JsonStore, {
                 limit: 'limit',
                 sort: 'order_by',
                 start: 'offset'
-            }
-        /*proxy : new Ext.data.HttpProxy({
-                method: 'GET',
-                url: '/gis/villages'
-            })*/
-        //reader: new GeoExt.ux.data.UxFeatureReader()
+            },
+            remoteSort: true
         }
 
         Ext.apply(selectionStoreConfig, config);
