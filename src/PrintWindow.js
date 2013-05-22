@@ -206,7 +206,7 @@ Ext.ux.PrintWindow = Ext.extend(Ext.Window, {
             scope: this,
             text: 'Next',
             width: 50
-        },'->', quitButton, printButton];
+        },'->', printButton, quitButton];
         var items = [{
             id: 'card-0',
             items: [{

@@ -135,7 +135,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
 
                 var w = new Ext.Window({
 
-                    bbar: ['->', {
+                    bbar: ['->', selectButton, {
                         handler: function(){
                             w.close();
                         },
@@ -143,8 +143,9 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                         iconAlign: 'top',
                         scale: 'medium',
                         text: Ext.ux.ts.tr('Close'),
+                        width: 50,
                         xtype: 'button'
-                    }, selectButton],
+                    }],
                     layout: 'fit',
                     items: [attributeSelectionPanel],
 
@@ -292,12 +293,23 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                                 Ext.apply(p, {
                                     format: 'hist',
                                     attrs: dataIndex,
-                                    height: 264,
+                                    height: 316,
                                     width: 586
                                 });
                                 var url = "/" + Ext.ux.currentLanguage + "/gis/layer?" + Ext.urlEncode(p);
+                                attributeIndex = attributeStore.find("name", dataIndex);
+                                var short_label = attributeStore.getAt(attributeIndex).get("label");
                                 var histWindow = new Ext.Window({
                                     bbar: ['->',{
+                                        handler: function(button, event){
+                                            window.location.href = url;
+                                        },
+                                        iconAlign: 'top',
+                                        iconCls: 'download-image-button',
+                                        scale: 'medium',
+                                        text: Ext.ux.ts.tr("Save as Image"),
+                                        xtype: 'button'
+                                    },{
                                         handler: function(button, event){
                                             histWindow.close();
                                         },
@@ -305,6 +317,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                                         iconAlign: 'top',
                                         scale: 'medium',
                                         text: Ext.ux.ts.tr("Close"),
+                                        width: 50,
                                         xtype: 'button'
                                     }],
                                     bodyCfg: {
@@ -316,16 +329,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                                         tag: 'div'
                                     },
                                     height: 400,
-                                    tbar: [{
-                                        handler: function(button, event){
-                                            window.location.href = url;
-                                        },
-                                        iconAlign: 'top',
-                                        iconCls: 'download-image-button',
-                                        scale: 'medium',
-                                        text: Ext.ux.ts.tr("Save as Image"),
-                                        xtype: 'button'
-                                    }],
+                                    title: Ext.ux.ts.tr("Histogram") + ": " + short_label,
                                     width: 600
                                 }).show();
                                 break;
@@ -339,37 +343,6 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
 
                 var w = new Ext.Window({
                     bbar: ['->',{
-                        handler: function(button, event){
-                            w.close();
-                        },
-                        iconCls: 'quit-button',
-                        iconAlign: 'top',
-                        scale: 'medium',
-                        text: Ext.ux.ts.tr("Close"),
-                        xtype: 'button'
-                    }],
-                    height: 400,
-                    items: [{
-                        bbar: new Ext.PagingToolbar({
-                            store: s,       // grid and PagingToolbar using same store
-                            displayInfo: true,
-                            pageSize: 25,
-                            prependButtons: true,
-                            paramNames: {
-                                start: 'offset',
-                                limit: 'limit'
-                            }
-                        }),
-                        border: false,
-                        columns: columns,
-                        frame: false,
-                        loadMask: true,
-                        store: s,
-                        view: gridView,
-                        xtype: 'grid'
-                    }],
-                    layout: 'fit',
-                    tbar: [{
                         handler: function(){
 
                             var loadingMask = new Ext.LoadMask(document.body, {
@@ -409,7 +382,39 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                         scale: 'medium',
                         scope: this,
                         xtype: 'button'
+                    },{
+                        handler: function(button, event){
+                            w.close();
+                        },
+                        iconCls: 'quit-button',
+                        iconAlign: 'top',
+                        scale: 'medium',
+                        text: Ext.ux.ts.tr("Close"),
+                        width: 50,
+                        xtype: 'button'
                     }],
+                    height: 400,
+                    items: [{
+                        bbar: new Ext.PagingToolbar({
+                            store: s,       // grid and PagingToolbar using same store
+                            displayInfo: true,
+                            pageSize: 25,
+                            prependButtons: true,
+                            paramNames: {
+                                start: 'offset',
+                                limit: 'limit'
+                            }
+                        }),
+                        border: false,
+                        columns: columns,
+                        frame: false,
+                        loadMask: true,
+                        store: s,
+                        view: gridView,
+                        xtype: 'grid'
+                    }],
+                    layout: 'fit',
+                    title: Ext.ux.ts.tr("Attribute table") + ": " + selected.data.layer.name,
                     width: 600
                 }).show();
             },
