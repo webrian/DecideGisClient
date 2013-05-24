@@ -63,6 +63,8 @@ GIS navigation buttons
 }
 .quit-button {
     background-image: url(img/quit.png) !important;
+    height: 24px !important;
+    width: 24px !important;
 }
 .go-previous-button {
     background-image: url(img/go-previous.png) !important;

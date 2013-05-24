@@ -20,8 +20,8 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
             toggleGroup:"tools",
             allowDepress:false,
             scale:'medium',
-            text:Ext.ux.ts.tr('Select'),
-            tooltip:Ext.ux.ts.tr('Select Features'),
+            text: Ext.ux.ts.tr('Select'),
+            tooltip: Ext.ux.ts.tr('Select features'),
             control: new OpenLayers.Control.SelectByBox({
                 eventListeners:{
                     "select": this.selectFeaturesByBox,
@@ -37,7 +37,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
             toggleGroup:"tools",
             allowDepress:false,
             scale: 'medium',
-            text: Ext.ux.ts.tr('Freehand Select'),
+            text: Ext.ux.ts.tr("Freehand Select"),
             tooltip: Ext.ux.ts.tr("Select features freehand"),
             control: new OpenLayers.Control.DrawFeature(this.viewport.freehandSelectionLayer, OpenLayers.Handler.Polygon, {
                 displayInLayerSwitcher: false,
@@ -100,6 +100,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
             scale: 'medium',
             scope: this,
             text: Ext.ux.ts.tr("Print"),
+            tooltip: Ext.ux.ts.tr("Print"),
             width: 50
         },{
             handler: function(event){
@@ -411,7 +412,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                         },
                         iconCls: 'download-table-button',
                         iconAlign: 'top',
-                        text: Ext.ux.ts.tr("Save as Table"),
+                        text: Ext.ux.ts.tr("Save as table"),
                         scale: 'medium',
                         scope: this,
                         xtype: 'button'
@@ -441,7 +442,9 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                         border: false,
                         columns: columns,
                         frame: false,
-                        loadMask: true,
+                        loadMask: {
+                            msg: Ext.ux.ts.tr("Loading...")
+                        },
                         store: s,
                         view: gridView,
                         xtype: 'grid'
@@ -455,7 +458,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
             iconAlign: 'top',
             scope: this,
             text: Ext.ux.ts.tr("Attribute Table"),
-            tooltip: Ext.ux.ts.tr("Show Attribute Table")
+            tooltip: Ext.ux.ts.tr("Attribute Table")
         },{
             handler: function(){
                 var selected = this.viewport.layerGrid.getSelectedLayer();
