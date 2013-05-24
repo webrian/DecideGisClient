@@ -20,8 +20,8 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
             toggleGroup:"tools",
             allowDepress:false,
             scale:'medium',
-            text:Ext.ux.ts.tr('Select'),
-            tooltip:Ext.ux.ts.tr('Select Features'),
+            text: Ext.ux.ts.tr('Select'),
+            tooltip: Ext.ux.ts.tr('Select features'),
             control: new OpenLayers.Control.SelectByBox({
                 eventListeners:{
                     "select": this.selectFeaturesByBox,
@@ -37,7 +37,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
             toggleGroup:"tools",
             allowDepress:false,
             scale: 'medium',
-            text: Ext.ux.ts.tr('Freehand Select'),
+            text: Ext.ux.ts.tr("Freehand Select"),
             tooltip: Ext.ux.ts.tr("Select features freehand"),
             control: new OpenLayers.Control.DrawFeature(this.viewport.freehandSelectionLayer, OpenLayers.Handler.Polygon, {
                 displayInLayerSwitcher: false,
@@ -100,6 +100,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
             scale: 'medium',
             scope: this,
             text: Ext.ux.ts.tr("Print"),
+            tooltip: Ext.ux.ts.tr("Print"),
             width: 50
         },{
             handler: function(event){
@@ -285,60 +286,93 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                                 store.sort(dataIndex, 'DESC');
                                 break;
                             case 'hist':
-                                // Clone the base parameters
-                                var p = Ext.apply({}, s.baseParams);
-                                // Remove the limit and offset parameter
-                                delete p['limit'];
-                                delete p['offset'];
-                                Ext.apply(p, {
-                                    format: 'hist',
-                                    attrs: dataIndex,
-                                    height: 316,
-                                    width: 586
-                                });
-                                var url = "/" + Ext.ux.currentLanguage + "/gis/layer?" + Ext.urlEncode(p);
-                                attributeIndex = attributeStore.find("name", dataIndex);
-                                var short_label = attributeStore.getAt(attributeIndex).get("label");
-                                var histWindow = new Ext.Window({
-                                    bbar: ['->',{
-                                        handler: function(button, event){
-                                            window.location.href = url;
-                                        },
-                                        iconAlign: 'top',
-                                        iconCls: 'download-image-button',
-                                        scale: 'medium',
-                                        text: Ext.ux.ts.tr("Save as Image"),
-                                        xtype: 'button'
-                                    },{
-                                        handler: function(button, event){
-                                            histWindow.close();
-                                        },
-                                        iconCls: 'quit-button',
-                                        iconAlign: 'top',
-                                        scale: 'medium',
-                                        text: Ext.ux.ts.tr("Close"),
-                                        width: 50,
-                                        xtype: 'button'
-                                    }],
-                                    bodyCfg: {
-                                        children: [{
-                                            tag: 'img',
-                                            src: url,
-                                            alt: "Histogram"
-                                        }],
-                                        tag: 'div'
-                                    },
-                                    height: 400,
-                                    title: Ext.ux.ts.tr("Histogram") + ": " + short_label,
-                                    width: 600
-                                }).show();
+                                this.showHistogram(dataIndex);
                                 break;
                             default:
                                 this.handleHdMenuClickDefault(item);
                         }
                         return true;
                     },
-                    histogramText: Ext.ux.ts.tr("Show histogram")
+                    histogramText: Ext.ux.ts.tr("Show histogram"),
+                    showHistogram: function(dataIndex){
+                        // Clone the base parameters
+                        var p = Ext.apply({}, s.baseParams);
+                        // Remove the limit and offset parameter
+                        delete p['limit'];
+                        delete p['offset'];
+                        Ext.apply(p, {
+                            format: 'hist',
+                            attrs: dataIndex,
+                            height: 316,
+                            width: 586
+                        });
+                        attributeIndex = attributeStore.find("name", dataIndex);
+                        var short_label = attributeStore.getAt(attributeIndex).get("label");
+
+                        var loadingMask = new Ext.LoadMask(document.body, {
+                            msg: Ext.ux.ts.tr("Loading...")
+                        });
+                        loadingMask.show();
+                        
+                        Ext.Ajax.request({
+                            callback: function(options, success, response){
+                                loadingMask.hide();
+                            },
+                            failure: function(response, options){
+                                Ext.Msg.alert(Ext.ux.ts.tr("Error"), response.responseText);
+                            },
+                            success: function(response){
+
+                                var r = Ext.decode(response.responseText);
+
+                                if(r.success){
+                                    var histWindow = new Ext.Window({
+                                        bbar: ['->',{
+                                            handler: function(button, event){
+                                                window.location.href = r.msg + "?" + Ext.urlEncode({
+                                                    forcedownload: true
+                                                })
+                                            },
+                                            iconAlign: 'top',
+                                            iconCls: 'download-image-button',
+                                            scale: 'medium',
+                                            text: Ext.ux.ts.tr("Save as Image"),
+                                            xtype: 'button'
+                                        },{
+                                            handler: function(button, event){
+                                                histWindow.close();
+                                            },
+                                            iconCls: 'quit-button',
+                                            iconAlign: 'top',
+                                            scale: 'medium',
+                                            text: Ext.ux.ts.tr("Close"),
+                                            width: 50,
+                                            xtype: 'button'
+                                        }],
+                                        bodyCfg: {
+                                            children: [{
+                                                tag: 'img',
+                                                src: r.msg,
+                                                alt: "Histogram"
+                                            }],
+                                            tag: 'div'
+                                        },
+                                        height: 400,
+                                        title: short_label,
+                                        width: 600
+                                    }).show();
+                                } else {
+                                    Ext.Msg.show({
+                                        buttons: Ext.Msg.OK,
+                                        icon: Ext.Msg.ERROR,
+                                        msg: r.msg,
+                                        title: Ext.ux.ts.tr("Error")
+                                    });
+                                }
+                            },
+                            url: "/" + Ext.ux.currentLanguage + "/gis/layer?" + Ext.urlEncode(p)
+                        });
+                    }
                 });
 
                 var w = new Ext.Window({
@@ -378,7 +412,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                         },
                         iconCls: 'download-table-button',
                         iconAlign: 'top',
-                        text: Ext.ux.ts.tr("Save as Table"),
+                        text: Ext.ux.ts.tr("Save as table"),
                         scale: 'medium',
                         scope: this,
                         xtype: 'button'
@@ -408,13 +442,15 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                         border: false,
                         columns: columns,
                         frame: false,
-                        loadMask: true,
+                        loadMask: {
+                            msg: Ext.ux.ts.tr("Loading...")
+                        },
                         store: s,
                         view: gridView,
                         xtype: 'grid'
                     }],
                     layout: 'fit',
-                    title: Ext.ux.ts.tr("Attribute table") + ": " + selected.data.layer.name,
+                    title: selected.data.layer.name,
                     width: 600
                 }).show();
             },
@@ -422,7 +458,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
             iconAlign: 'top',
             scope: this,
             text: Ext.ux.ts.tr("Attribute Table"),
-            tooltip: Ext.ux.ts.tr("Show Attribute Table")
+            tooltip: Ext.ux.ts.tr("Attribute Table")
         },{
             handler: function(){
                 var selected = this.viewport.layerGrid.getSelectedLayer();
@@ -578,7 +614,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
         this.viewport.mapSelection.selectFreehand(f.geometry);
         this.viewport.selectionStore.selectFreehand(f.geometry,this.viewport.currentFields);
         this.viewport.selectionGridPanel.reconfigure(this.viewport.selectionStore,this.viewport.getColumnModelFromFields(this.viewport.currentFields,true));
-     */
+         */
         this.viewport.freehandSelectionLayer.removeFeatures([f]);
 
     },
