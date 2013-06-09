@@ -405,6 +405,8 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                                     var r = Ext.decode(response.responseText);
                                     if(r.success){
                                         window.location.href = r.msg;
+                                    } else {
+                                        Ext.Msg.alert("Error", r.msg);
                                     }
                                 },
                                 url: "/" + Ext.ux.currentLanguage + "/gis/layer"
@@ -493,6 +495,8 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                         var r = Ext.decode(response.responseText);
                         if(r.success){
                             window.location.href = r.msg;
+                        } else {
+                            Ext.Msg.alert("Error", r.msg);
                         }
                     },
                     url: "/" + Ext.ux.currentLanguage + "/gis/layer"
