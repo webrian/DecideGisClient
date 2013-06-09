@@ -301,11 +301,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
             // Auto create TreeLoader
             loader: {
                 dataUrl: "/gis/layertree",
-                listeners: {
-                    'beforeload': function(treeloader, node){
-                    //treeloader.baseParams.dataset = datasetCombo.getValue();
-                    }
-                },
                 requestMethod: 'GET'
             },
             root: {
@@ -314,6 +309,37 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                 text: Ext.ux.ts.tr('Lao DECIDE Info')
             },
             rootVisible: false,
+            tbar: [{
+                handler: function(button, event){
+                    var loadingMask = new Ext.LoadMask(this.layerTreePanel.body, {
+                        msg: Ext.ux.ts.tr("Loading...")
+                    });
+                    loadingMask.show();
+
+                    this.layerTreePanel.getRootNode().reload(function(){
+                        loadingMask.hide();
+                    });
+                },
+                iconCls: 'refresh-button',
+                scale: 'medium',
+                scope: this,
+                tooltip: Ext.ux.ts.tr('Reload catalog'),
+                xtype: 'button'
+            },{
+                handler: function(button, event){
+                    var node = this.layerTreePanel.getSelectionModel().getSelectedNode();
+                    if(node){
+                        this.addLayerToStore(node);
+                    } else {
+                        Ext.Msg.alert(Ext.ux.ts.tr("No layer selected"), Ext.ux.ts.tr("Select a layer from the layer list."));
+                    }
+                },
+                iconCls: 'add-layer-button',
+                scale: 'medium',
+                scope: this,
+                tooltip: Ext.ux.ts.tr('Add layer'),
+                xtype: 'button'
+            }],
             title: Ext.ux.ts.tr("Catalog")
         });
 

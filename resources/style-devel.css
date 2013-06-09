@@ -54,9 +54,22 @@ GIS navigation buttons
 .identify-button {
     background-image: url(img/identify.png) !important;
 }
+/** Icons in layer tree panel **/
+.add-layer-button{
+    background-image: url(img/layer-add.png) !important;
+    height: 24px !important;
+    width: 24px !important;
+}
 /** Icons in print window **/
 .add-frame-button {
     background-image: url(img/layer-add.png) !important;
+    height: 24px !important;
+    width: 24px !important;
+}
+.refresh-button {
+    background-image: url(img/view-refresh.png) !important;
+    height: 24px !important;
+    width: 24px !important;
 }
 .remove-frame-button {
     background-image: url(img/layer-delete.png) !important;
