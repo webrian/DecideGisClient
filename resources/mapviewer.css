@@ -22,4 +22,9 @@
 .help-button {
     background-image: url(img/help.png) !important;
 }
+.quit-button {
+    background-image: url(img/quit.png) !important;
+    height: 24px !important;
+    width: 24px !important;
+}
 

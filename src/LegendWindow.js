@@ -25,8 +25,10 @@ Ext.ux.LegendWindow = Ext.extend(Ext.Window, {
                 handler: function(){
                     this.close();
                 },
+                iconCls: 'quit-button',
+                scale: 'medium',
                 scope: this,
-                text: Ext.ux.ts.tr("Close"),
+                tooltip: Ext.ux.ts.tr("Close"),
                 xtype: 'button'
             }],
             bodyStyle: {
