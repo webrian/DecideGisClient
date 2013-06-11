@@ -30,6 +30,12 @@ Buttons in the main toolbar
 .download-table-button {
     background-image: url(img/download_table.png) !important;
 }
+.video-button {
+    background-image: url(img/video-x-generic.png) !important;
+}
+.tutorial-button {
+    background-image: url(img/text-x-generic.png) !important;
+}
 /*
 GIS navigation buttons
 */
@@ -76,8 +82,6 @@ GIS navigation buttons
 }
 .quit-button {
     background-image: url(img/quit.png) !important;
-    height: 24px !important;
-    width: 24px !important;
 }
 .go-previous-button {
     background-image: url(img/go-previous.png) !important;
