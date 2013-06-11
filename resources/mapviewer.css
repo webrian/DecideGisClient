@@ -24,7 +24,11 @@
 }
 .quit-button {
     background-image: url(img/quit.png) !important;
-    height: 24px !important;
-    width: 24px !important;
+}
+.video-button {
+    background-image: url(img/video-x-generic.png) !important;
+}
+.tutorial-button {
+    background-image: url(img/text-x-generic.png) !important;
 }
 

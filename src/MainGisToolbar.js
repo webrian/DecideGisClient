@@ -508,7 +508,42 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
             tooltip: Ext.ux.ts.tr("Download selected features"),
             text: Ext.ux.ts.tr('Download')
         },'-',
-        selectAction, freehandSelectAction, unselectAction, zoomSelection]
+        selectAction, freehandSelectAction, unselectAction, zoomSelection, '-',{
+            handler: function(button){
+                var w = new Ext.Window({
+                    bbar: ['->', {
+                        handler: function(){
+                            w.close();
+                        },
+                        iconCls: 'quit-button',
+                        scale: 'medium',
+                        tooltip: Ext.ux.ts.tr("Close"),
+                        xtype: 'button'
+                    }],
+                    height: 430,
+                    html: "<div style=\"margin: 2px;\"><iframe width=\"640\" height=\"360\" src=\"" + Ext.ux.tutorialLink + "\" frameborder=\"0\" allowfullscreen></iframe></div>",
+                    resizable: false,
+                    width: 658
+                }).show();
+            },
+            iconAlign: 'top',
+            iconCls: 'video-button',
+            scale: 'medium',
+            tooltip: Ext.ux.ts.tr('Video tutorial'),
+            xtype: 'button'
+        },{
+             handler: function(button){
+                window.location.href = "/" + Ext.ux.currentLanguage + "/downloads/index/user_manual_chapter3_gis.pdf?forcedownload=1";
+            },
+            iconAlign: 'top',
+            iconCls: 'tutorial-button',
+            scale: 'medium',
+            style: {
+                'margin-right': '10px'
+            },
+            tooltip: Ext.ux.ts.tr('User manual'),
+            xtype: 'button'
+        }]
 
         var config = {
             defaults: {
