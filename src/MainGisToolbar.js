@@ -414,7 +414,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                         },
                         iconCls: 'download-table-button',
                         iconAlign: 'top',
-                        text: Ext.ux.ts.tr("Save as table"),
+                        tooltip: Ext.ux.ts.tr("Save as table"),
                         scale: 'medium',
                         scope: this,
                         xtype: 'button'
@@ -425,8 +425,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                         iconCls: 'quit-button',
                         iconAlign: 'top',
                         scale: 'medium',
-                        text: Ext.ux.ts.tr("Close"),
-                        width: 50,
+                        tooltip: Ext.ux.ts.tr("Close"),
                         xtype: 'button'
                     }],
                     height: 400,

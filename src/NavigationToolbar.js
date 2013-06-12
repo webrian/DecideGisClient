@@ -247,7 +247,7 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
                 iconCls: 'quit-button',
                 iconAlign: 'top',
                 scale: 'medium',
-                text: Ext.ux.ts.tr("Close"),
+                tooltip: Ext.ux.ts.tr("Close"),
                 xtype: 'button'
             }],
             layout: 'fit',
