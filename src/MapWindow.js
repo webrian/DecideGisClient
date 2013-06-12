@@ -280,7 +280,8 @@ Ext.ux.MapWindow = Ext.extend(Ext.Panel, {
                         xtype: 'button'
                     }],
                     height: 430,
-                    html: "<div style=\"margin: 2px;\"><iframe width=\"640\" height=\"360\" src=\"https://www.youtube.com/embed/y3Q5BYmTsXA?feature=player_detailpage\" frameborder=\"0\" allowfullscreen></iframe></div>",
+                    html: "<div style=\"margin: 2px;\"><iframe width=\"640\" height=\"360\" src=\""
+                    + Ext.ux.tutorialLink + "\" frameborder=\"0\" allowfullscreen></iframe></div>",
                     resizable: false,
                     width: 658
                 }).show();
