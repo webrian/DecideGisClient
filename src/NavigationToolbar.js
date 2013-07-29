@@ -201,14 +201,6 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
         var viewport = this.viewport;
         var layerstore = this.viewport.layerStore2;
 
-        var columns = new Array();
-        for(var i = 0; i < keys.length; i++) {
-            columns.push({
-                header: keys[i],
-                dataIndex: keys[i]
-            });
-        }
-
         var geojson = new OpenLayers.Format.GeoJSON();
 
         var vectors = geojson.read(geojsonResponse);
@@ -238,6 +230,17 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             return record.data.layer.displayInLayerSwitcher;
         }, this);
 
+        // Get the column fields and headers from the vector itself
+        var fields = new Array();
+        var columns = new Array();
+        for(var a in vector.attributes){
+            fields.push(a);
+            columns.push({
+                header: a,
+                dataIndex: a
+            });
+        }
+
         var identifyWindow = new Ext.Window({
             bbar: ['->', {
                 handler: function(button){
@@ -258,7 +261,7 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
                 frame: false,
                 store: {
                     autoLoad: true,
-                    fields: keys,
+                    fields: fields,
                     data: [vector.attributes],
                     xtype: 'jsonstore'
                 },
