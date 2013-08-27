@@ -112,6 +112,30 @@ img.olImageLoadError {
     width:16px !important;
 }
 
+img.move-up-layer {
+    background-image: url(img/move-up-16.png) !important;
+    height:16px !important;
+    width:16px !important;
+}
+
+img.move-down-layer {
+    background-image: url(img/move-down-16.png) !important;
+    height:16px !important;
+    width:16px !important;
+}
+
+img.legend-layer {
+    background-image: url(img/legend-16.png) !important;
+    height:16px !important;
+    width:16px !important;
+}
+
+img.delete-layer {
+    background-image: url(img/layer-delete-16.png) !important;
+    height:16px !important;
+    width:16px !important;
+}
+
 /** Small icons in the layer tree and list to indicate geometry type **/
 div.POINT img.x-tree-node-icon {
     background-image: url(img/point-16.png) !important;
