@@ -650,71 +650,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * @deprecated
-     * Creates a column model for use in a grid based on the parameter fields.
-     * Parameter fields needs to be an array with the fields that will be shown
-     * in the grid.
-     * @param {Array(string)} fields
-     * @param {boolean} reset
-     * @return void
-     * @type void
-     */
-    getColumnModelFromFields: function(fields, reset) {
-        console.warn("@deprecated");
-        if(reset) {
-            this.resetCurrentFields();
-        }
-        var columns = new Array();
-
-        //var nbr = atlasLayerStore.findExact('id',fields[i]);
-        //var record = atlasLayerStore.getAt(nbr);
-        //record.get('label');
-
-        for (var i = 0; i < fields.length; i++) {
-            var r = this.attributeStore.getById(fields[i]);
-            var h;
-            if(r) {
-                h = r.get('short_label')
-            } else {
-                h = fields[i]
-            }
-
-            columns[i] = new Ext.grid.Column({
-                header: h,
-                dataIndex: fields[i]
-            });
-        }
-
-        return new Ext.grid.ColumnModel({
-            defaultSortable: false,
-            columns: columns
-        });
-    },
-
-    /**
-     * @deprecated
-     * @param {OpenLayers.Layer} layer
-     * @returns void
-     * @type void
-     */
-    setActiveLayer: function(layer){
-        console.warn("@deprecated");
-        // Loop over all layers
-        for(var i = 0; i < this.layers.length; i++) {
-            var l = this.layers[i];
-            // Test if it's an atlas layer
-            //if(l.id.split(".")[0] == this.ATLAS_PREFIX) {
-            if(l.id == layer.id) {
-                layer.setVisibility(true);
-            }
-            else {
-                layer.setVisibility(false);
-            }
-        //}
-        }
-    },
-
-    /**
      * Select features by attribute conditions. Basically it's similar to the
      * feature selection by bounding box. Create a selection style with rules,
      * reinstantiate the selection layer as OpenLayers.Layer.WMS.Post layer
@@ -731,18 +666,6 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
         });
 
         var layer = ms.selectByAttributes(logicalOperator, attributeSelectionStore);
-
-        /*
-        var fields = this.selectionStore.selectByAttributes(logicalOperator, attributeSelectionStore, this.currentFields);
-
-        this.selectionGridPanel.reconfigure(
-            this.selectionStore,this.getColumnModelFromFields(fields, true));
-
-        // Set the selection bounds to the full extent, since we don't know
-        // where the features are and it is probable that the features are
-        // distributed all over the country.
-        this.selectionBounds = this.fullExtent;
-         */
 
         this.layerStore2.add([new GeoExt.data.LayerRecord({
             layer: layer,

@@ -172,6 +172,11 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
         var ds = split[0];
         var ln = split[1];
 
+        // Get the pixel size to determine the tolerance in the mapfish request
+        // which depends on the zoom level
+        var pixelSize = this.viewport.map.getGeodesicPixelSize(event.xy).w;
+        var tolerance = (pixelSize * 1000) * 5;
+
         // Request the mapfish protocol
         Ext.Ajax.request({
             method: 'GET',
@@ -182,10 +187,10 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
                 lat: lonLat.lat,
                 layer: ln,
                 lon: lonLat.lon,
-                limit: 1,
+                limit: 10,
                 no_geom: false,
                 // Add a tolerance value to hit also point features
-                tolerance: 1000
+                tolerance: tolerance
             },
             scope: this,
             success: function(r){
@@ -209,12 +214,12 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
             return null;
         }
 
-        var vector = vectors[0];
+        //var vector = vectors[0];
 
         var identifyLayer = new OpenLayers.Layer.Vector("Identiy Layer", {
             displayInLayerSwitcher: false
         });
-        identifyLayer.addFeatures([vector]);
+        identifyLayer.addFeatures(vectors);
 
 
         var lr = new GeoExt.data.LayerRecord({
@@ -233,12 +238,17 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
         // Get the column fields and headers from the vector itself
         var fields = new Array();
         var columns = new Array();
-        for(var a in vector.attributes){
+        for(var a in vectors[0].attributes){
             fields.push(a);
             columns.push({
                 header: a,
                 dataIndex: a
             });
+        }
+
+        var data = new Array();
+        for(var i = 0; i < vectors.length; i++){
+            data.push(vectors[i].attributes);
         }
 
         var identifyWindow = new Ext.Window({
@@ -262,7 +272,7 @@ Ext.ux.NavigationToolbar=Ext.extend(Ext.Toolbar,{
                 store: {
                     autoLoad: true,
                     fields: fields,
-                    data: [vector.attributes],
+                    data: data,
                     xtype: 'jsonstore'
                 },
                 viewConfig: {
