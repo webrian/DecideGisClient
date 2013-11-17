@@ -403,7 +403,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                 xtype: 'actioncolumn',
                 width: 40,
                 items: [{
-                    icon: '/img/move-up-16.png',
+                    iconCls: 'move-up-layer',
                     tooltip: Ext.ux.ts.tr("Raise Layer"),
                     handler: function(grid, rowIndex, colIndex) {
                         // Raise the layer up in the layer store and on the map
@@ -420,7 +420,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                     },
                     scope: this
                 },{
-                    icon: '/img/move-down-16.png',
+                    iconCls: 'move-down-layer',
                     tooltip: Ext.ux.ts.tr("Lower Layer"),
                     handler: function(grid, rowIndex, colIndex) {
                         var count = this.layerStore2.getCount();
@@ -438,7 +438,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                     },
                     scope: this
                 },{
-                    icon: '/img/layer-delete-16.png',                // Use a URL in the icon config
+                    iconCls: 'delete-layer',
                     tooltip: Ext.ux.ts.tr('Remove Layer'),
                     handler: function(grid, rowIndex, colIndex) {
                         var rec = this.layerStore2.getAt(rowIndex);
@@ -446,7 +446,7 @@ Ext.ux.GisViewport = Ext.extend(Ext.Panel, {
                     },
                     scope: this
                 },{
-                    icon: '/img/legend-16.png',
+                    iconCls: 'legend-layer',
                     tooltip: Ext.ux.ts.tr("Show legend"),
                     handler: function(grid, rowIndex, colIndex){
 
