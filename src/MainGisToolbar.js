@@ -336,7 +336,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                                             iconAlign: 'top',
                                             iconCls: 'download-image-button',
                                             scale: 'medium',
-                                            text: Ext.ux.ts.tr("Save as Image"),
+                                            tooltip: Ext.ux.ts.tr("Save as Image"),
                                             xtype: 'button'
                                         },{
                                             handler: function(button, event){
@@ -345,7 +345,7 @@ Ext.ux.MainGisToolbar = Ext.extend(Ext.Toolbar, {
                                             iconCls: 'quit-button',
                                             iconAlign: 'top',
                                             scale: 'medium',
-                                            text: Ext.ux.ts.tr("Close"),
+                                            tooltip: Ext.ux.ts.tr("Close"),
                                             width: 50,
                                             xtype: 'button'
                                         }],
